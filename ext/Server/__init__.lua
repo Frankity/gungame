@@ -1,14 +1,16 @@
 class 'GunGameServer'
 
 local weaponList = {firstWeapon = ""} --, secondWeapon = "", thirdWeapon = "", fourthWeapon = "", fifthWeapon = "", sixthWeapon = "", seventhWeapon = "", egithWeapon = "", ninthWeapon = "", tenWeapon = ""}
-
+local soldierAppearance = { one = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Jungle", two = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Navy", three = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja", four = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Para", five = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ranger", six = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact", seven ="Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Urban" }
+local inputsToDisable = { 16, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
+local soldierAppFound = {}
 local soldierAsset = nil
 local soldierBlueprint = nil
-local weapon = nil
-local M320 = nil
+local primaryWeapon = nil
+local secondaryWeapon = nil
+local thirdWeapon = nil
 local weaponAtt0 = nil
 local weaponAtt1 = nil
-local drPepper = nil
 
 local m_AreaWidth = 10
 local m_AreaLength = 20
@@ -36,16 +38,15 @@ end
 function GunGameServer:OnLoadResources()
 	soldierAsset = nil
 	soldierBlueprint = nil
-	weapon = nil
-	M320 = nil
+	primaryWeapon = nil
+	secondaryWeapon = nil
+	thirdWeapon = nil
 	weaponAtt0 = nil
 	weaponAtt1 = nil
-	drPepper = nil
 end
 
 function GunGameServer:OnPartitionLoaded(partition)
-	local instances = partition.instances
-
+	local instances = partition.instances	
 	for _, instance in pairs(instances) do
 		if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
 			local asset = VeniceSoldierCustomizationAsset(instance)
@@ -54,8 +55,9 @@ function GunGameServer:OnPartitionLoaded(partition)
 				print('Found soldier customization asset ' .. asset.name)
 				soldierAsset = asset
 			end
+			
 		end
-
+--rcon command to disable spawn on friend
 		if instance.typeInfo.name == 'SoldierBlueprint' then
 			soldierBlueprint = SoldierBlueprint(instance)
 			print('Found soldier blueprint ' .. soldierBlueprint.name)
@@ -66,10 +68,14 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 			if asset.name == 'Weapons/M416/U_M416' then
 				print('Found soldier weapon unlock asset ' .. asset.name)
-				weapon = asset
+				primaryWeapon = asset
 			elseif asset.name == 'Weapons/Glock17/U_Glock17' then
 				print('Found soldier weapon unlock asset ' .. asset.name)
-				M320 = asset
+				secondaryWeapon = asset
+			end
+			if asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then
+				print('Found soldier weapon unlock asset ' .. asset.name)
+				thirdWeapon = asset
 			end
 		end
 		if instance.typeInfo.name == 'UnlockAsset' then
@@ -83,15 +89,20 @@ function GunGameServer:OnPartitionLoaded(partition)
 			if asset.name == 'Weapons/M416/U_M416_Silencer' then
 				print('Found weapon unlock asset ' .. asset.name)
 				weaponAtt1 = asset
-			end		
-			if asset.name == 'Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Recon_Appearance_DrPepper' then
-				print('Found appearance asset ' .. asset.name)
-				drPepper = asset
+			end
+			for _, sAsset in pairs(soldierAppearance) do 
+				if asset.name == sAsset then
+					print('Found appearance asset ' .. asset.name)
+					table.insert(soldierAppFound, asset)
+				end
 			end
 		end
 	end
 end
 
+local function getRandomSoldierApp() 
+    return soldierAppFound[math.random(1,#soldierAppFound)] 
+end
 
 function GunGameServer:OnPlayerSpawn(player)
 	print('checking player')
@@ -100,97 +111,23 @@ function GunGameServer:OnPlayerSpawn(player)
 		return
 	end
 
-	local transform = LinearTransform(
-		Vec3(1, 0, 0),
-		Vec3(0, 1, 0),
-		Vec3(0, 0, 1),
-		Vec3(0, 0, 0)
-	)
-
-	print(soldierBlueprint)
-
 	print('Setting soldier primary weapon')
-	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, { weaponAtt0, weaponAtt1 })
-	player:SelectWeapon(WeaponSlot.WeaponSlot_1, M320, {})
+	player:SelectWeapon(WeaponSlot.WeaponSlot_0, primaryWeapon, { weaponAtt0, weaponAtt1 })
+	player:SelectWeapon(WeaponSlot.WeaponSlot_1, secondaryWeapon, {})
 
 	print('Setting soldier class and appearance')
-	player:SelectUnlockAssets(soldierAsset, { drPepper })
+	player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
 
-	print('Creating soldier')
-	local soldier = player:CreateSoldier(soldierBlueprint, transform)
-
-	if soldier == nil then
-		print('Failed to create player soldier')
-		return
+	player.soldier:SetCurrentPrimaryAmmo(0)
+	player.soldier:SetCurrentSecondaryAmmo(0)
+	
+	for _, input in pairs(inputsToDisable) do
+		player:EnableInput(input, false)
 	end
 
-	print('Spawning soldier')
-	player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Prone)
-
-	player.soldier:SetWeaponPrimaryAmmoByIndex(WeaponSlot.WeaponSlot_1, 0)
-	player.soldier:SetWeaponSecondaryAmmoByIndex(WeaponSlot.WeaponSlot_1, 10)
-
-	player.soldier:SetCurrentPrimaryAmmo(0)
-	player.soldier:SetCurrentPrimaryAmmo(0)
 	print('Soldier spawned')
 
---[[ 	local weaponUnlock = _G[weapon.typeInfo.name](weapon)
-	weaponUnlock.unlockWeaponAndSlot.weapon = ak74mUnlock
-	weaponUnlock.unlockWeaponAndSlot.slot = 1
-	-- weaponUnlockPickupData.unlockWeaponAndSlot.unlockAssets:add() -- add attachments etc
-
-	weaponUnlock.timeToLive = 300
-	weaponUnlock.unspawnOnPickup = true
-	weaponUnlock.positionIsStatic  = true
-	weaponUnlock.allowPickup = true
-	weaponUnlock.ignoreNullWeaponSlots = true
-	weaponUnlock.forceWeaponSlotSelection  = true
-	weaponUnlock.hasAutomaticAmmoPickup = true
-	weaponUnlock.interactionRadius = 2.5
-	weaponUnlock.replaceAllContent = true
-	weaponUnlock.weapons:add(weapon)
-
-	local s_Params = EntityCreationParams()
-	s_Params.transform = player.soldier.transform
-	s_Params.variationNameHash = 0
-	s_Params.networked = true
-
-	local entity = EntityManager:CreateEntity(weaponUnlockPickupEntityData, s_Params)
-	entity:Init(Realm.Realm_Server, true) ]]
-
 end
-
---[[ function GunGameClient:FirstWeapon(player)
-	local weapon = ResourceManager:FindInstanceByGUID(Guid(weaponList.firstWeapon))
-	if weapon == nil then
-		error("instance not found")
-	end
-
-	local weaponUnlock = _G[weapon.typeInfo.name](weapon)
-	weaponUnlock.unlockWeaponAndSlot.weapon = ak74mUnlock
-	weaponUnlock.unlockWeaponAndSlot.slot = 1
-	-- weaponUnlockPickupData.unlockWeaponAndSlot.unlockAssets:add() -- add attachments etc
-
-	weaponUnlock.timeToLive = 300
-	weaponUnlock.unspawnOnPickup = true
-	weaponUnlock.positionIsStatic  = true
-	weaponUnlock.allowPickup = true
-	weaponUnlock.ignoreNullWeaponSlots = true
-	weaponUnlock.forceWeaponSlotSelection  = true
-	weaponUnlock.hasAutomaticAmmoPickup = true
-	weaponUnlock.interactionRadius = 2.5
-	weaponUnlock.replaceAllContent = true
-	weaponUnlock.weapons:add(weapon)
-
-	local s_Params = EntityCreationParams()
-	s_Params.transform = player.soldier.transform
-	s_Params.variationNameHash = 0
-	s_Params.networked = true
-
-	local entity = EntityManager:CreateEntity(weaponUnlockPickupEntityData, s_Params)
-	entity:Init(Realm.Realm_Server, true)
-
-end ]]
 
 function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
 	
