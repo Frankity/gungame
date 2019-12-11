@@ -1,7 +1,15 @@
 class 'GunGameServer'
 
-local weaponList = {firstWeapon = ""} --, secondWeapon = "", thirdWeapon = "", fourthWeapon = "", fifthWeapon = "", sixthWeapon = "", seventhWeapon = "", egithWeapon = "", ninthWeapon = "", tenWeapon = ""}
-local soldierAppearance = { one = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Jungle", two = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Navy", three = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja", four = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Para", five = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ranger", six = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact", seven ="Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Urban" }
+local soldierAppearance = { 
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Jungle",
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Navy", 
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja",
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Para", 
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ranger",
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
+	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Urban" 
+}
+
 local inputsToDisable = { 17, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
 local soldierAppFound = {}
 local soldierAsset = nil
@@ -14,26 +22,53 @@ local weaponAtt1 = nil
 local knife = nil
 local noGadget1 = nil
 local medicbag = nil
-local weapons = {
+--[[ local weapons = {
 	secondaryWeapon = secondaryWeapon,
 	primaryWeapon = primaryWeapon
-}
+} ]]
 local weaponOrder = {
-	weapons.secondaryWeapon,
-	weapons.primaryWeapon
+	weapons.m9,
+	weapons.m44,
+	weapons.g18,
+	weapons.m1911 ,
+	weapons.spas12,
+	weapons.l96,
+	weapons.ak74,
+	weapons.p90,
+	weapons.l86,
+	weapons.m98,
+	weapons.dao12 ,
+	weapons.mp7,
+	weapons.ump45,
+	weapons.m249,
+	weapons.type95,
+	weapons.mg36,
+	weapons.pp19
 }
 
 local playersScores = {
 
 }
 
---[[ local weapons = {
-	m4 = { partitionGuid = Guid(), instanceGuid = Guid()},
-	m41 = { partitionGuid = Guid(), instanceGuid = Guid()},
-	m42 = { partitionGuid = Guid(), instanceGuid = Guid()}
-} ]]
-
-
+local weapons = {
+	m9 = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"),
+	m44 = Guid("1EA227D8-2EB5-A63B-52FF-BBA9CFE34AD8", "D"),
+	g18 = Guid("DB364A96-08FB-4C6E-856B-BD9749AE0A92", "D"),
+	m1911 = Guid("A76BB99E-ABFE-48E9-9972-5D87E5365DAB", "D"),
+	spas12 = Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D", "D"),
+	l96 = Guid(" CBAEC77C-A6AD-4D63-96BD-61FCA6C18417", "D"),
+	ak74 = Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E", "D"),
+	p90 = Guid("C12E6868-FC08-4E25-8AD0-1C51201EA69B", "D"),
+	l86 = Guid("BA0AF247-2E5B-4574-8F89-515DFA1C767D", "D"),
+	m98 = Guid("05EB2892-8B51-488E-8956-4350C3D2BA27", "D"),
+	dao12 = Guid("27F63AEA-DD70-4929-9B08-5FF8F075B75E", "D"),
+	mp7 = Guid("04C8604E-37DE-4B51-B70A-66468003D604", "D"),
+	ump45 = Guid("2A267103-14F2-4255-B0D4-819139A4E202", "D"),
+	m249 = Guid("AEAA518B-9253-40C2-AA18-A11F8F2D474C", "D"),
+	type95 = Guid("FE05ACAA-32FC-4FD7-A34B-61413F6F7B1A", "D"),
+	mg36 = Guid("95E00B23-BAD4-4F3B-A85E-990204EFF26B", "D"),
+	pp19 = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"),
+}
 
 local m_AreaWidth = 10
 local m_AreaLength = 20
@@ -59,8 +94,23 @@ end
 
 function GunGameServer:OnLevelLoaded()
 	self.weaponOrder = {
-		weapons.secondaryWeapon,
-		weapons.primaryWeapon
+		weapons.m9,
+		weapons.m44,
+		weapons.g18,
+		weapons.m1911 ,
+		weapons.spas12,
+		weapons.l96,
+		weapons.ak74,
+		weapons.p90,
+		weapons.l86,
+		weapons.m98,
+		weapons.dao12 ,
+		weapons.mp7,
+		weapons.ump45,
+		weapons.m249,
+		weapons.type95,
+		weapons.mg36,
+		weapons.pp19
 	}
 end
 
