@@ -12,12 +12,19 @@ function GunGameClient:RegisterVars()
 end
 
 function GunGameClient:RegisterEvents()
-	self.LoadEvent = Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
-	self.ReadInstanceEvent = Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
-	self.UpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-	self.OnUpdateInputEvent = Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
+	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
+	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
+	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
+	Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
 	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
 	Hooks:Install('ResourceManager:LoadBundle',999, self, self.OnLoadBundle)
+	NetEvents:Subscribe('Event:Client', self, self.OnRequest)
+	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
+
+end
+
+function GunGameClient:OnReceive(score)
+	print('server sent ' .. score)
 end
 
 function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
@@ -33,7 +40,10 @@ function GunGameClient:OnUpdateInput(p_Delta)
 		--WebUI:DisableMouse()
         WebUI:Hide()
     end
-
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F2) then
+		local player = PlayerManager:GetLocalPlayer()
+		NetEvents:SendLocal('Event:Client', player)
+	end
 end
 
 

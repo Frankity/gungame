@@ -74,10 +74,16 @@ end
 function GunGameServer:RegisterEvents()
 	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
 	--Events:Subscribe('Level:LoadResources', OnLoadResources)
-	Events:Subscribe("Player:Respawn", self, self.OnPlayerSpawn)
+	Events:Subscribe('Player:Respawn', self, self.OnPlayerSpawn)
 	Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
-	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
+	Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
 	Events:Subscribe('Server:LevelLoaded', self, self.OnLevelLoaded)
+	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
+	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
+
+end
+
+function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
 
 end
 
@@ -106,20 +112,6 @@ end
 function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadkill, headshot, victimInReviveState)
 	if player == nil or inflictor == nil then return end
 
---[[ 	local weaponcasted = _G[weapon.typeInfo.name](weapon)
-
-	if string.fing(weaponcasted.name:lower(), "knife") then
-		local victimScore = playersScores[player.name]
-
-		if victimScore == nil then 
-			victimScore = {}
-		end
-
-		victimScore.score = math.min(victimScore.score - 1, 1)
-		self:UpdateWeapon(player)
-		
-		--player.score = victimScore.score
-	end ]]
 
 	if playersScores[inflictor.name] == nil then 
 		playersScores[inflictor.name] = {score = 1}
@@ -252,7 +244,7 @@ end
 function GunGameServer:OnPlayerSpawn(player)
 	
 	if player == nil or player.soldier == nil then
-		print('playr should be dead to spawn')
+		print('player should be dead to spawn')
 		return
 	end
 
@@ -273,7 +265,14 @@ function GunGameServer:OnPlayerSpawn(player)
 end
 
 function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
-	
+end
+
+function GunGameServer:OnReceive(player)
+	print('player ' .. player.name .. ' ask for info and has ' .. player.onlineId)
+	print(playersScores)
+	for _, pl in pairs(playersScores) do
+		NetEvents:SendLocal('Event:Server', pl[score])
+	end
 end
 
 g_GunGameServer = GunGameServer()
