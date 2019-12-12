@@ -15,6 +15,7 @@ function GunGameClient:RegisterEvents()
 	self.LoadEvent = Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
 	self.ReadInstanceEvent = Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
 	self.UpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
+	self.OnUpdateInputEvent = Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
 	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
 	Hooks:Install('ResourceManager:LoadBundle',999, self, self.OnLoadBundle)
 end
@@ -23,10 +24,23 @@ function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
 	print(string.format("Loading bundle '%s'", p_Bundle))
 end
 
+function GunGameClient:OnUpdateInput(p_Delta)
+    if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
+        WebUI:BringToFront()
+        --WebUI:EnableMouse()
+		WebUI:Show()
+	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Tab) then
+		--WebUI:DisableMouse()
+        WebUI:Hide()
+    end
+
+end
+
 
 function GunGameClient:OnLoadResources(p_Dedicated)
 	print("OnLoadResources")
-	
+	WebUI:Init()
+	WebUI:Hide()
 end
 
 function GunGameClient:OnEngineUpdate(p_Delta, p_SimDelta)
@@ -56,21 +70,7 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen") then
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
 	end
-	if(s_Screen.name == "UI/Flow/Screen/Weapon/CrosshairDefault") then
-		p_Hook:Pass(self.Screens['UI/Flow/Screen/Weapon/DebugScreenCrosshairs'], p_GraphPriority, p_ParentGraph)
-	end
-
 end
-
-function GunGameClient:SetSetting(p_SettingName, p_Field, p_Value)
-	local p_Setting = ResourceManager:GetSettings(p_SettingName)
-	if p_Setting ~= nil then
-		print(p_SettingName)
-		local s_Setting = _G[p_SettingName](p_Setting)
-		s_Setting[firstToLower(p_Field)] = p_Value
-	end
-end
-
 
 function GunGameClient:OnPartitionLoaded(partition)
 	local instance = partition.instances 
@@ -88,10 +88,7 @@ function GunGameClient:OnPartitionLoaded(partition)
 			self.Screens[s_Instance.name] = UIGraphAsset(l_Instance)
 		end
 	end
-
-
 end
-
 function firstToLower(str)
 	return (str:gsub("^%L", string.lower))
 end

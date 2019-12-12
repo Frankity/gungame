@@ -1,0 +1,113 @@
+<html>
+
+  <head>
+    <title>GunGame</title>
+    <script type="text/javascript" src="scripts/jquery-3.2.1.min.js"></script>
+  </head>
+
+  <body>
+    <style type="text/css">
+      #container {
+        position:absolute; 
+        left:0; right:0;
+        top:0; bottom:0;
+        margin:auto;
+        border-radius: 6px;
+        background-color: #79797981;
+        font-family: 'Roboto', sans-serif;
+      }
+
+      table {
+        border-radius: 6px;
+        width: 100%;
+        
+        table-layout: fixed;
+
+      }
+
+      th {
+        padding: 20px 15px;
+        text-align: center;
+        font-weight: 500;
+        font-size: 12px;
+        color: rgb(0, 0, 0);
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 7px;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 300;
+        font-size: 12px;
+        color: #fff;
+        border-bottom: solid 1px rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        background-color: #091825fa;
+      }
+
+    </style>
+    <div id="container" style="width: 50%; height: 50%">
+      <table>
+        <thead>
+          <th>Name</th>
+          <th>Weapon</th>
+          <th>Kills</th>
+          <th>Deaths</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Frankity</td>
+            <td>M2000</td>
+            <td>10</td>
+            <td>3</td>
+          </tr>
+          <tr>
+                <td>FoolHeen</td>
+                <td>M88</td>
+                <td>3</td>
+                <td>10</td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+    <script type="text/javascript">
+      selectedKit = 0;
+      CanSpawnWithKit = [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ];
+
+      function EnableSpawnForKit(kitId) {
+        CanSpawnWithKit[kitId] = true;
+        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
+      }
+
+      function DisableSpawnForKit(kitId) {
+        CanSpawnWithKit[kitId] = false;
+        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
+      }
+
+      $('.kitSelection').change(function () {
+        selectedKit = $('input[name=kitSelection]:checked', '#KitSelection').val()
+        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
+      });
+
+      function SpawnSoldier() {
+        console.log("Spawning with " + selectedKit)
+        WebUI.Call('DispatchEventLocal', 'RealityModUI:SpawnWithKit', selectedKit);
+      }
+    </script>
+
+  </body>
+
+</html>

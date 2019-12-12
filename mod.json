@@ -4,6 +4,6 @@
 	"Description": "Gungame mod out of the box",
 	"URL": "none",
 	"Version": "1",
-	"HasWebUI": false,
+	"HasWebUI": true,
 	"HasVeniceEXT": true
 }
