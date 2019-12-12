@@ -1,31 +1,14 @@
 class 'GunGameServer'
 
 local soldierAppearance = { 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Jungle",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Navy", 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Para", 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ranger",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Urban" 
+	jungle = Guid("BE5BE457-641C-424E-B54E-068490322F3D"),
+	navy = Guid("F064241F-A3F7-40FB-919C-BDBE1295393F"),
+	ninja = Guid("A9923B54-3913-4C95-AF67-AA0491A13DF6"),
+	para = Guid("35C84D2A-A360-4648-B0AA-10FAE4D64A8F"),
+	ranger = Guid("2558F475-E366-42EF-91E2-3951EF9A3E39"),
+	spec = Guid("01A806BA-49FA-4CAD-B923-2ACBD8155834"),
+	urban = Guid("BA2F7234-849B-4645-BF84-5A68AEB0293C")
 }
-
-local inputsToDisable = { 17, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
-local soldierAppFound = {}
-local soldierAsset = nil
-local soldierBlueprint = nil
-local primaryWeapon = nil
-local secondaryWeapon = nil
-local thirdWeapon = nil
-local weaponAtt0 = nil
-local weaponAtt1 = nil
-local knife = nil
-local noGadget1 = nil
-local medicbag = nil
---[[ local weapons = {
-	secondaryWeapon = secondaryWeapon,
-	primaryWeapon = primaryWeapon
-} ]]
 
 local weapons = {
 	m9 = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"),
@@ -47,6 +30,19 @@ local weapons = {
 	pp19 = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"),
 }
 
+local inputsToDisable = { 17, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
+local soldierAppFound = {}
+local soldierAsset = nil
+local soldierBlueprint = nil
+local primaryWeapon = nil
+local secondaryWeapon = nil
+local thirdWeapon = nil
+local weaponAtt0 = nil
+local weaponAtt1 = nil
+local knife = nil
+local noGadget1 = nil
+local medicbag = nil
+
 local weaponOrder = {
 	weapons.m9,
 	weapons.m44,
@@ -67,11 +63,7 @@ local weaponOrder = {
 	weapons.pp19
 }
 
-local playersScores = {
-
-}
-
-
+local playersScores = {}
 
 local m_AreaWidth = 10
 local m_AreaLength = 20
@@ -135,7 +127,6 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 		--player.score = victimScore.score
 	end ]]
 
-
 	if playersScores[inflictor.name] == nil then 
 		playersScores[inflictor.name] = {score = 1}
 	end
@@ -143,13 +134,10 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	
 	print("updating score of ".. inflictor.name .. ", old: ".. inflictor.score)
 
-	inflictorScore.score = math.max(inflictorScore.score + 1, #self.weaponOrder)
+	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
 	print("new: ".. inflictor.score)
 	self:UpdateWeapon(inflictor)
-	--player.score 
-	--player.kills
-	--player.deaths
-
+	
 end
 
 function GunGameServer:RegisterVars()
@@ -188,14 +176,11 @@ function GunGameServer:OnPartitionLoaded(partition)
 			end
 			
 		end
---rcon command to disable spawn on friend
 		if instance.typeInfo.name == 'SoldierBlueprint' then
 			soldierBlueprint = SoldierBlueprint(instance)
 			print('Found soldier blueprint ' .. soldierBlueprint.name)
 		end
 
-		
-		
 		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
 			local asset = SoldierWeaponUnlockAsset(instance)
 			for i, uAsset in pairs(weapons) do
@@ -220,8 +205,6 @@ function GunGameServer:OnPartitionLoaded(partition)
 				print('Found soldier weapon unlock asset ' .. asset.name)
 				medicbag = asset
 			end
-
-			
 		end
 		if instance.typeInfo.name == 'UnlockAsset' then
 			local asset = UnlockAsset(instance)
@@ -241,10 +224,10 @@ function GunGameServer:OnPartitionLoaded(partition)
 				noGadget1 = asset
 			end
 			
-			for _, sAsset in pairs(soldierAppearance) do 
-				if asset.name == sAsset then
-					print('Found appearance asset ' .. asset.name)
-					table.insert(soldierAppFound, asset)
+			for i, sAsset in pairs(soldierAppearance) do 
+				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
+				if appearanceInatance ~= nil then
+					table.insert(soldierAppFound, appearanceInatance)
 				end
 			end
 		end
@@ -266,46 +249,32 @@ function GunGameServer:UpdateWeapon(player)
 	if playerScore ~= nil then
 		score = playerScore.score
 	end
-	print("updating weapon, score: "..score)
-	print(#self.weaponOrder)
-	print(self.weaponOrder[score])
+
 	player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], {  })
-	
 	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
 
 end
 
 function GunGameServer:OnPlayerSpawn(player)
-	print('checking player')
+	
 	if player == nil or player.soldier == nil then
 		print('playr should be dead to spawn')
 		return
 	end
 
-	
 	self:UpdateWeapon(player)
-	
---	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weaponOrder[1], {  })
 	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
-	--player.soldier:SetWeaponPrimaryAmmoByIndex(0, 0)
-	--player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
-
 	for i = 2, 8, 1 do
 		player:SelectWeapon(i, knife, {})
 		player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
 		player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
 	end
 	
-	print('Setting soldier class and appearance')
 	player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
 
-	
-	
 	for _, input in next, inputsToDisable do
 		player:EnableInput(input, false)
 	end
-
-	print('Soldier spawned')
 
 end
 
