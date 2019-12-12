@@ -65,12 +65,6 @@ local weaponOrder = {
 
 local playersScores = {}
 
-local m_AreaWidth = 10
-local m_AreaLength = 20
-local m_AreaHeight = 10
-
-local m_StartingPos = {x=0, y=100, z=0}
-
 function GunGameServer:__init()
 	print("Initializing GunGameServer")
 	self:RegisterEvents()
@@ -283,4 +277,3 @@ function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
 end
 
 g_GunGameServer = GunGameServer()
-
