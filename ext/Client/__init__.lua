@@ -6,9 +6,9 @@ function GunGameClient:__init()
 	self:RegisterEvents()
 end
 
-
 function GunGameClient:RegisterVars()
 	self.Screens = {}
+	self.playersScores = {}
 end
 
 function GunGameClient:RegisterEvents()
@@ -18,13 +18,14 @@ function GunGameClient:RegisterEvents()
 	Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
 	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
 	Hooks:Install('ResourceManager:LoadBundle',999, self, self.OnLoadBundle)
-	NetEvents:Subscribe('Event:Client', self, self.OnRequest)
-	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
+	--NetEvents:Subscribe('Event:Client', self, self.OnRequest)
+	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
 
 end
 
-function GunGameClient:OnReceive(score)
-	print('server sent ' .. score)
+function GunGameClient:OnReceive(p_Scores)
+	self.playersScores = p_Scores
+	print(self.playersScores)
 end
 
 function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
@@ -32,7 +33,9 @@ function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
 end
 
 function GunGameClient:OnUpdateInput(p_Delta)
-    if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
+	
+	
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
         WebUI:BringToFront()
         --WebUI:EnableMouse()
 		WebUI:Show()
@@ -40,10 +43,7 @@ function GunGameClient:OnUpdateInput(p_Delta)
 		--WebUI:DisableMouse()
         WebUI:Hide()
     end
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F2) then
-		local player = PlayerManager:GetLocalPlayer()
-		NetEvents:SendLocal('Event:Client', player)
-	end
+	
 end
 
 
@@ -79,7 +79,12 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 	print("Pushed: " .. s_Screen.name)
 	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen") then
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
+		-- added here to send the event only when the client call the scoreboard
+		local player = PlayerManager:GetLocalPlayer()
+		NetEvents:SendLocal('Event:Server', player)
 	end
+	
+	
 end
 
 function GunGameClient:OnPartitionLoaded(partition)

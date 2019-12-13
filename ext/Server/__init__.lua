@@ -79,7 +79,7 @@ function GunGameServer:RegisterEvents()
 	Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
 	Events:Subscribe('Server:LevelLoaded', self, self.OnLevelLoaded)
 	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
-	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
+	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
 
 end
 
@@ -118,10 +118,10 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	end
 	local inflictorScore = playersScores[inflictor.name]
 	
-	print("updating score of ".. inflictor.name .. ", old: ".. inflictor.score)
+	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.name].score)
 
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
-	print("new: ".. inflictor.score)
+	print("new: ".. playersScores[inflictor.name].score)
 	self:UpdateWeapon(inflictor)
 	
 end
@@ -157,7 +157,6 @@ function GunGameServer:OnPartitionLoaded(partition)
 			local asset = VeniceSoldierCustomizationAsset(instance)
 
 			if asset.name == 'Gameplay/Kits/RURecon' then
-				print('Found soldier customization asset ' .. asset.name)
 				soldierAsset = asset
 			end
 			
@@ -176,19 +175,19 @@ function GunGameServer:OnPartitionLoaded(partition)
 				end
 			end
 			if asset.name == 'Weapons/M416/U_M416' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+			
 				weapons.primaryWeapon = asset
 			elseif asset.name == 'Weapons/Glock17/U_Glock17' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+			
 				weapons.secondaryWeapon = asset
 			elseif asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+			
 				thirdWeapon = asset
 			elseif asset.name == 'Weapons/Knife/U_Knife' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+			
 				knife = asset
 			elseif asset.name == 'Weapons/Gadgets/Medicbag/U_Medkit' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+
 				medicbag = asset
 			end
 		end
@@ -248,6 +247,10 @@ function GunGameServer:OnPlayerSpawn(player)
 		return
 	end
 
+	if playersScores[player.name] == nil then
+		playersScores[player.name] = {score = 1}
+	end
+
 	self:UpdateWeapon(player)
 	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
 	for i = 2, 8, 1 do
@@ -268,11 +271,8 @@ function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
 end
 
 function GunGameServer:OnReceive(player)
-	print('player ' .. player.name .. ' ask for info and has ' .. player.onlineId)
-	print(playersScores)
-	for _, pl in pairs(playersScores) do
-		NetEvents:SendLocal('Event:Server', pl[score])
-	end
+	print('player ' .. player.name .. ' ask for score data')
+	NetEvents:SendTo('Event:Client', player, playersScores)
 end
 
 g_GunGameServer = GunGameServer()
