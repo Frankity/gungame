@@ -107,20 +107,8 @@ function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
 end
 
 function GunGameServer:OnPlayerLeft(player)
-	if player == nil then return end
-	print(playersScores)
-	for i, v in ipairs(playersScores) do
-		print(v)
-		--[[ if player.name == v.name then
-			print('removing ' .. player.name)
-			playersScores:remove(playersScores[player.name].score)
-			playersScores:remove(i)
-			break
-		end ]]
-	end
-	print(playersScores)
-	--end
-	print("player " .. player.name .. " left the server")
+    if player == nil then return end
+    playersScores[player.onlineId] = nil
 end
 
 function GunGameServer:OnLevelLoaded()
@@ -149,16 +137,18 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	-- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
 	if player == nil or inflictor == nil then return end
 
-	if playersScores[inflictor.name] == nil then 
-		playersScores[inflictor.name] = {score = 1}
+	if playersScores[inflictor.onlineId] == nil then 
+		local dataPlayer = {name = player.name, score = 1}
+		playersScores[player.onlineId] = dataPlayer
 	end
 	
-	local inflictorScore = playersScores[inflictor.name]
-	
-	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.name].score)
+	local inflictorScore = playersScores[inflictor.onlineId]
+	print('score ' .. playersScores[inflictor.onlineId].score)
+	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.onlineId].score)
 
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
-	print("new: ".. playersScores[inflictor.name].score)
+	print("new: ".. playersScores[inflictor.onlineId].score)
+
 	self:UpdateWeapon(inflictor)
 	
 end
@@ -268,12 +258,11 @@ local function getRandomSoldierApp()
 end
 
 function GunGameServer:UpdateWeapon(player)
-	if player == nil or player.soldier == nil then
-		return
-	end
+	if player == nil or player.soldier == nil then return end
 
-	local playerScore = playersScores[player.name]
+	local playerScore = playersScores[player.onlineId]
 	local score = 1
+
 	if playerScore ~= nil then
 		score = playerScore.score
 	end
@@ -317,10 +306,15 @@ function GunGameServer:OnPlayerSpawn(player)
 		return
 	end
 
-	if playersScores[player.name] == nil then
+	if playersScores[player.onlineId] == nil then
+		local dataPlayer = {name = player.name, score = 1}
+		playersScores[player.onlineId] = dataPlayer
+	end	
+
+	--[[ if playersScores[player.name] == nil then
 		playersScores[player.name] = {score = 1}
 	end
-
+ 	]]
 	self:UpdateWeapon(player)
 	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
 	for i = 2, 8, 1 do
@@ -341,7 +335,7 @@ function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
 end
 
 function GunGameServer:OnReceive(player)
-	print('player ' .. player.name .. ' ask for score data')
+	-- sending player scores table to the client which requested it
 	NetEvents:SendTo('Event:Client', player, playersScores)
 end
 
