@@ -10,27 +10,6 @@ local soldierAppearance = {
 	urban = Guid("BA2F7234-849B-4645-BF84-5A68AEB0293C")
 }
 
--- we located weapons guid to use
-local weapons = {
-	m9 = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"), -- https://github.com/Powback/Venice-EBX/blob/071473993867cd2297dc662517c61edaff51e8fe/Weapons/M9/U_M9.txt
-	m44 = Guid("1EA227D8-2EB5-A63B-52FF-BBA9CFE34AD8", "D"),
-	g18 = Guid("DB364A96-08FB-4C6E-856B-BD9749AE0A92", "D"),
-	m1911 = Guid("A76BB99E-ABFE-48E9-9972-5D87E5365DAB", "D"),
-	spas12 = Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D", "D"),
-	l96 = Guid("CBAEC77C-A6AD-4D63-96BD-61FCA6C18417", "D"),
-	ak74 = Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E", "D"),
-	p90 = Guid("C12E6868-FC08-4E25-8AD0-1C51201EA69B", "D"),
-	l86 = Guid("BA0AF247-2E5B-4574-8F89-515DFA1C767D", "D"),
-	m98 = Guid("05EB2892-8B51-488E-8956-4350C3D2BA27", "D"),
-	dao12 = Guid("27F63AEA-DD70-4929-9B08-5FF8F075B75E", "D"),
-	mp7 = Guid("04C8604E-37DE-4B51-B70A-66468003D604", "D"),
-	ump45 = Guid("2A267103-14F2-4255-B0D4-819139A4E202", "D"),
-	m249 = Guid("AEAA518B-9253-40C2-AA18-A11F8F2D474C", "D"),
-	type95 = Guid("FE05ACAA-32FC-4FD7-A34B-61413F6F7B1A", "D"),
-	mg36 = Guid("95E00B23-BAD4-4F3B-A85E-990204EFF26B", "D"),
-	pp19 = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"),
-}
-
 local unlocksForWeapons = {
 	l96pso = Guid("10969667-1B5B-CE2F-B6C0-11E89D00B713", "D"),
 	ak74eotech = Guid("53B10FA8-2C64-BDB5-B195-6676EA575730", "D"),
@@ -45,6 +24,26 @@ local unlocksForWeapons = {
 	mg36eotech = Guid("8C3CA26E-AA4E-22BA-ADBE-7F60617BF31E", "D"),
 	pp19eotech = Guid("6C1F61A9-099D-4E2C-CD23-EC9B78675352", "D")
 } 
+-- we located weapons guid to use
+local weapons = {
+	m9 =     {guid = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"), attachments = {}}, -- https://github.com/Powback/Venice-EBX/blob/071473993867cd2297dc662517c61edaff51e8fe/Weapons/M9/U_M9.txt
+	m44 =    {guid = Guid("1EA227D8-2EB5-A63B-52FF-BBA9CFE34AD8", "D"), attachments = {}},
+	g18 =    {guid = Guid("DB364A96-08FB-4C6E-856B-BD9749AE0A92", "D"), attachments = {}},
+	m1911 =  {guid = Guid("A76BB99E-ABFE-48E9-9972-5D87E5365DAB", "D"), attachments = {}},
+	spas12 = {guid = Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D", "D"), attachments = {}},
+	l96 =    {guid = Guid("CBAEC77C-A6AD-4D63-96BD-61FCA6C18417", "D"), attachments = {unlocksForWeapons.l96pso}},
+	ak74 =   {guid = Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E", "D"), attachments = {unlocksForWeapons.ak74eotech}},
+	p90 =    {guid = Guid("C12E6868-FC08-4E25-8AD0-1C51201EA69B", "D"), attachments = {unlocksForWeapons.p90eotech}},
+	l86 =    {guid = Guid("BA0AF247-2E5B-4574-8F89-515DFA1C767D", "D"), attachments = {unlocksForWeapons.l86eotech}},
+	m98 =    {guid = Guid("05EB2892-8B51-488E-8956-4350C3D2BA27", "D"), attachments = {unlocksForWeapons.m96pso}},
+	dao12 =  {guid = Guid("27F63AEA-DD70-4929-9B08-5FF8F075B75E", "D"), attachments = {unlocksForWeapons.daoeotech}},
+	mp7 =    {guid = Guid("04C8604E-37DE-4B51-B70A-66468003D604", "D"), attachments = {unlocksForWeapons.mp7eotech}},
+	ump45 =  {guid = Guid("2A267103-14F2-4255-B0D4-819139A4E202", "D"), attachments = {unlocksForWeapons.ump45eotech}},
+	m249 =   {guid = Guid("AEAA518B-9253-40C2-AA18-A11F8F2D474C", "D"), attachments = {unlocksForWeapons.m249eotech}},
+	type95 = {guid = Guid("FE05ACAA-32FC-4FD7-A34B-61413F6F7B1A", "D"), attachments = {unlocksForWeapons.type95eotech}},
+	mg36 =   {guid = Guid("95E00B23-BAD4-4F3B-A85E-990204EFF26B", "D"), attachments = {unlocksForWeapons.mg36eotech}},
+	pp19 =   {guid = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"), attachments = {unlocksForWeapons.pp19eotech}},
+}
 
 -- variable declarations
 local inputsToDisable = { 17, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
@@ -81,7 +80,7 @@ local weaponOrder = {
 	weapons.pp19
 }
 
--- list to store scores on kill
+-- list to store scores on kill	
 local playersScores = {}
 
 function GunGameServer:__init()
@@ -108,7 +107,7 @@ end
 
 function GunGameServer:OnPlayerLeft(player)
     if player == nil then return end
-    playersScores[player.onlineId] = nil
+    playersScores[player.id] = nil
 end
 
 function GunGameServer:OnLevelLoaded()
@@ -137,17 +136,17 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	-- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
 	if player == nil or inflictor == nil then return end
 
-	if playersScores[inflictor.onlineId] == nil then 
+	if playersScores[inflictor.id] == nil then 
 		local dataPlayer = {name = player.name, score = 1}
-		playersScores[player.onlineId] = dataPlayer
+		playersScores[player.id] = dataPlayer
 	end
 	
-	local inflictorScore = playersScores[inflictor.onlineId]
-	print('score ' .. playersScores[inflictor.onlineId].score)
-	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.onlineId].score)
+	local inflictorScore = playersScores[inflictor.id]
+	print('score ' .. playersScores[inflictor.id].score)
+	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.id].score)
 
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
-	print("new: ".. playersScores[inflictor.onlineId].score)
+	print("new: ".. playersScores[inflictor.id].score)
 
 	self:UpdateWeapon(inflictor)
 	
@@ -195,38 +194,27 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
 			local asset = SoldierWeaponUnlockAsset(instance)
-			for i, sUAsset in pairs(weapons) do
+--[[			for i, sUAsset in pairs(weapons) do
 				local instanceData = ResourceManager:SearchForInstanceByGUID(sUAsset)
 				if instanceData ~= nil then
 					weapons[i] = instanceData
 				end
 			end
-			if asset.name == 'Weapons/M416/U_M416' then
+ 			if asset.name == 'Weapons/M416/U_M416' then
 			
 				weapons.primaryWeapon = asset
 			elseif asset.name == 'Weapons/Glock17/U_Glock17' then
 			
 				weapons.secondaryWeapon = asset
-			elseif asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then
+			elseif asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then ]]
 			
 				thirdWeapon = asset
-			elseif asset.name == 'Weapons/Knife/U_Knife' then
-			
+			if asset.name == 'Weapons/Knife/U_Knife' then
 				knife = asset
-			elseif asset.name == 'Weapons/Gadgets/Medicbag/U_Medkit' then
-
-				medicbag = asset
 			end
 		end
 		if instance.typeInfo.name == 'UnlockAsset' then
 			local asset = UnlockAsset(instance)
-
-			for i, uAsset in pairs(unlocksForWeapons) do
-				local instanceUnlock = ResourceManager:SearchForInstanceByGUID(uAsset)
-				if instanceUnlock ~= nil then
-					unlocksForWeapons[i] = instanceUnlock
-				end
-			end
 			
 			if asset.name == 'Weapons/M416/U_M416_ACOG' then
 				print('Found weapon unlock asset ' .. asset.name)
@@ -260,41 +248,30 @@ end
 function GunGameServer:UpdateWeapon(player)
 	if player == nil or player.soldier == nil then return end
 
-	local playerScore = playersScores[player.onlineId]
+	local playerScore = playersScores[player.id]
 	local score = 1
 
 	if playerScore ~= nil then
 		score = playerScore.score
 	end
 
-	if score < 6 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], {  })
-	elseif score == 6 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.l96pso })
-	elseif score == 7 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.ak74eotech })
-	elseif score == 8 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.p90eotech })
-	elseif score == 9 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.l86eotech })
-	elseif score == 10 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.m96pso })
-	elseif score == 11 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.daoeotech })
-	elseif score == 12 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.mp7 })
-	elseif score == 13 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.ump45eotech })
-	elseif score == 14 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.m249eotech })
-	elseif score == 15 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.type95eotech })
-	elseif score == 16 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.mg36eotech })
-	elseif score == 17 then
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], { unlocksForWeapons.pp19eotech })
+	local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
+	local attachments = {}
+
+	for _, attGuid in pairs(self.weaponOrder[score].attachments) do
+		local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
+		if attachment~= nil then
+			table.insert(attachments, attachment)
+		end
 	end
-	
+
+	if weapon == nil then
+		print("QUE COJONES")
+		return
+	end
+
+	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
+
 	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
 
 end
@@ -306,9 +283,9 @@ function GunGameServer:OnPlayerSpawn(player)
 		return
 	end
 
-	if playersScores[player.onlineId] == nil then
+	if playersScores[player.id] == nil then
 		local dataPlayer = {name = player.name, score = 1}
-		playersScores[player.onlineId] = dataPlayer
+		playersScores[player.id] = dataPlayer
 	end	
 
 	--[[ if playersScores[player.name] == nil then

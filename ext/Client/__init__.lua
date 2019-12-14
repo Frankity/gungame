@@ -24,9 +24,12 @@ function GunGameClient:RegisterEvents()
 end
 
 function GunGameClient:OnReceive(p_Scores)
-	self.playersScores = p_Scores
-	print(self.playersScores)
-	WebUI:ExecuteJS(string.format("loadScoreBoardData(%s)", json.encode(self.playersScores)))
+	--self.playersScores = p_Scores
+	print(p_Scores)
+	--WebUI:ExecuteJS("removeOldData()")
+	print(json.encode(p_Scores))
+	
+	WebUI:ExecuteJS(string.format("loadScoreBoardData(%s)", json.encode(p_Scores)))
 end
 
 function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
@@ -79,7 +82,7 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 		-- added here to send the event only when the client call the scoreboard
 		local player = PlayerManager:GetLocalPlayer()
 		NetEvents:SendLocal('Event:Server', player)
-		WebUI:ExecuteJS("removeOldData()")
+		
 	end
 
 end
