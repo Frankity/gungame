@@ -26,6 +26,7 @@ end
 function GunGameClient:OnReceive(p_Scores)
 	self.playersScores = p_Scores
 	print(self.playersScores)
+	WebUI:ExecuteJS(string.format("loadScoreBoardData(%s)", json.encode(self.playersScores)))
 end
 
 function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
@@ -33,7 +34,6 @@ function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
 end
 
 function GunGameClient:OnUpdateInput(p_Delta)
-	
 	
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
         WebUI:BringToFront()
@@ -46,11 +46,8 @@ function GunGameClient:OnUpdateInput(p_Delta)
 	
 end
 
-
 function GunGameClient:OnLoadResources(p_Dedicated)
 	print("OnLoadResources")
-	WebUI:Init()
-	WebUI:Hide()
 end
 
 function GunGameClient:OnEngineUpdate(p_Delta, p_SimDelta)
@@ -82,14 +79,16 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 		-- added here to send the event only when the client call the scoreboard
 		local player = PlayerManager:GetLocalPlayer()
 		NetEvents:SendLocal('Event:Server', player)
+		WebUI:ExecuteJS("removeOldData()")
 	end
-	
-	
+
 end
 
 function GunGameClient:OnPartitionLoaded(partition)
 	local instance = partition.instances 
 
+	WebUI:Init()
+	WebUI:Hide()
 
 	for _, l_Instance in ipairs(instance) do
 		if l_Instance == nil then
@@ -104,6 +103,7 @@ function GunGameClient:OnPartitionLoaded(partition)
 		end
 	end
 end
+
 function firstToLower(str)
 	return (str:gsub("^%L", string.lower))
 end
