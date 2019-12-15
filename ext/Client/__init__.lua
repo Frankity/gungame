@@ -20,7 +20,22 @@ function GunGameClient:RegisterEvents()
 	Hooks:Install('ResourceManager:LoadBundle',999, self, self.OnLoadBundle)
 	--NetEvents:Subscribe('Event:Client', self, self.OnRequest)
 	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
+	Hooks:Install('UI:DrawNametags', 999, self, self.DrawNametags)
+	Hooks:Install('UI:DrawMoreNametags', 999, self, self.DrawMoreNametags)
+	Hooks:Install('UI:RenderMinimap', 999, self, self.RenderMinimap)
 
+end
+
+function GunGameClient:CreateKillMessage(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function GunGameClient:DrawNametags(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function GunGameClient:DrawMoreNametags(p_Hook)
+    p_Hook:Return(nil)
 end
 
 function GunGameClient:OnReceive(p_Scores)
@@ -39,12 +54,11 @@ end
 function GunGameClient:OnUpdateInput(p_Delta)
 	
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
-        WebUI:BringToFront()
         --WebUI:EnableMouse()
-		WebUI:Show()
+		WebUI:ExecuteJS("showScoreBoard()")
 	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Tab) then
 		--WebUI:DisableMouse()
-        WebUI:Hide()
+		WebUI:ExecuteJS("hideScoreBoard()")
     end
 	
 end
@@ -68,7 +82,7 @@ function GunGameClient:OnEngineUpdate(p_Delta, p_SimDelta)
 	end
 	
 	self.m_loadHandle = nil
-	
+		
 end
 
 function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
@@ -77,12 +91,11 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 	end
 	local s_Screen = UIGraphAsset(p_Screen)
 	print("Pushed: " .. s_Screen.name)
-	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen") then
+	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen" or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen") then
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
 		-- added here to send the event only when the client call the scoreboard
 		local player = PlayerManager:GetLocalPlayer()
 		NetEvents:SendLocal('Event:Server', player)
-		
 	end
 
 end
@@ -91,7 +104,7 @@ function GunGameClient:OnPartitionLoaded(partition)
 	local instance = partition.instances 
 
 	WebUI:Init()
-	WebUI:Hide()
+	WebUI:BringToFront()
 
 	for _, l_Instance in ipairs(instance) do
 		if l_Instance == nil then

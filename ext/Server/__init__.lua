@@ -194,7 +194,7 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
 			local asset = SoldierWeaponUnlockAsset(instance)
---[[			for i, sUAsset in pairs(weapons) do
+		--[[for i, sUAsset in pairs(weapons) do
 				local instanceData = ResourceManager:SearchForInstanceByGUID(sUAsset)
 				if instanceData ~= nil then
 					weapons[i] = instanceData
@@ -251,6 +251,12 @@ function GunGameServer:UpdateWeapon(player)
 	local playerScore = playersScores[player.id]
 	local score = 1
 
+	if playersScores[player.id].score == #weapons then
+		print(player.name .. " won the match")
+		alarm(10, endRound(player))
+		print(" alarm set")
+	end
+
 	if playerScore ~= nil then
 		score = playerScore.score
 	end
@@ -274,6 +280,11 @@ function GunGameServer:UpdateWeapon(player)
 
 	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
 
+end
+
+function endRound(player)
+	ChatManager:SendMessage(player.name .. " won the match, restarting in 10 seconds")
+	RCON:SendCommand('mapList.runNextRound',{})
 end
 
 function GunGameServer:OnPlayerSpawn(player)

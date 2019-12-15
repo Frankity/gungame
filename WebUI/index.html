@@ -23,7 +23,7 @@
         font-family: purista;
       }
 
-      #container {
+      #scoreContainer {
         position: absolute;
         left: 0;
         right: 0;
@@ -43,8 +43,8 @@
 
       th {
         padding: 5px 9px;
-        margin: 5px 5px;
-        background-image:  linear-gradient(#72AADA,#4E7F9F);
+        margin: 5px;
+        background-image: linear-gradient(#72AADA, #4E7F9F);
         text-align: left;
         font-weight: 500;
         font-size: 16px;
@@ -58,7 +58,7 @@
         text-align: left;
         vertical-align: middle;
         font-weight: 300;
-        background-image: linear-gradient(#3f566b,#202d35);
+        background-image: linear-gradient(#3f566b, #202d35);
         font-size: 14px;
         opacity: 0.9;
         color: #fff;
@@ -66,76 +66,152 @@
         /*border-bottom: solid 1px rgba(255, 255, 255, 0.1);*/
       }
 
-      body {
-        background-color: rgb(0, 0, 0, 0.5);
+      #currentWeapon {
+        width: 940px;
+        /*background-color: #220000;*/
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        margin-left: -470px;
+      }
+
+      #crumbs {
+        text-align: center;
+      }
+
+      #crumbs ul {
+        list-style: none;
+        display: inline-table;
+      }
+
+      #crumbs ul li {
+        display: inline;
+      }
+
+      #crumbs ul li a {
+        display: block;
+        float: left;
+        height: 0;
+        background-image: linear-gradient(#3f566b, #202d35);
+        text-align: center;
+        padding: 26px 0 0 20px;
+        position: relative;
+        margin: 0 0 0 0;
+        font-size: 20px;
+        text-decoration: none;
+        color: #fff;
+      }
+
+      #crumbs ul li a:after {
+        content: "";
+       /* border-top: 13px solid transparent;
+        border-bottom: 13px solid transparent;
+        border-left: 12px solid #202d35;*/
+        position: absolute;
+        right: -12px;
+        top: 0;
+        z-index: 1;
+      }
+
+      #crumbs ul li a:before {
+        content: "";
+       /*border-top: 13px solid transparent;
+        border-bottom: 13px solid transparent;
+        border-left: 12px solid #d4f2ff;*/
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      #crumbs ul li:first-child a {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+
+      #crumbs ul li:first-child a:before {
+        display: none;
+      }
+
+      #crumbs ul li:last-child a {
+        padding-right: 8px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+
+      #crumbs ul li:last-child a:after {
+        display: none;
+      }
+
+      #crumbs ul li a:hover {
+        background: linear-gradient(#3f566b, #202d35);
+      }
+
+      #crumbs ul li a:hover:after {
+        border-left-color: linear-gradient(#3f566b, #202d35);
       }
     </style>
-    <div id="container" style="width: 50%; height: 50%">
+    <div id="scoreContainer" style="width: 50%; height: 50%;display: none;">
       <table cellspacing="0" cellpadding="0">
         <thead>
           <th width="70%">Name</th>
           <th width="15%" style="text-align: right;">Weapon</th>
           <th width="15%" style="text-align: right;">Score</th width="15%">
         </thead>
-        <tbody id="tablecontainer">
-         <tr>
-          <td>FoolHeen</td>
-          <td style="text-align: right;">Glock 18</td>
-          <td style="text-align: right;">3</td>
-         </tr>
-         <tr>
-          <td>Kiwidog</td>
-          <td style="text-align: right;">AK74M</td>
-          <td style="text-align: right;">7</td>
-         </tr>
-         <tr>
-          <td>Timse</td>
-          <td style="text-align: right;">L86</td>
-          <td style="text-align: right;">6</td>
-         </tr>
-         <tr>
-          <td>Janssent</td>
-          <td style="text-align: right;">MG36</td>
-          <td style="text-align: right;">16</td>
-         </tr>
-        </tbody>
+        <tbody id="tablecontainer"></tbody>
       </table>
     </div>
-    <script type="text/javascript">
-      selectedKit = 0;
-      CanSpawnWithKit = [
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true
-      ];
+    <div id="currentWeapon" style="display: none;">
+      <div id="crumbs">
+        <ul>
+          <li>
+            <a href="#">1</a>
+          </li>
+          <li>
+            <a href="#">2</a>
+          </li>
+          <li>
+            <a href="#">3</a>
+          </li>
+          <li>
+            <a href="#">4</a>
+          </li>
+          <li>
+            <a href="#">5</a>
+          </li>
+          <li>
+            <a href="#">6</a>
+          </li>
+          <li>
+            <a href="#">7</a>
+          </li>
+          <li>
+            <a href="#">8</a>
+          </li>
+          <li>
+            <a href="#">9</a>
+          </li>
+          <li>
+            <a href="#">10</a>
+          </li>
+          <li>
+            <a href="#">11</a>
+          </li>
+          <li>
+            <a href="#">12</a>
+          </li>
+          <li>
+            <a href="#">13</a>
+          </li>
+          <li>
+            <a href="#">14</a>
+          </li>
+          <li>
+            <a href="#">15</a>
+          </li>
 
-      function EnableSpawnForKit(kitId) {
-        CanSpawnWithKit[kitId] = true;
-        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
-      }
-
-      function DisableSpawnForKit(kitId) {
-        CanSpawnWithKit[kitId] = false;
-        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
-      }
-
-      $('.kitSelection').change(function () {
-        selectedKit = $('input[name=kitSelection]:checked', '#KitSelection').val()
-        $('#SpawnButton').prop('disabled', !CanSpawnWithKit[selectedKit]);
-      });
-
-      function SpawnSoldier() {
-        console.log("Spawning with " + selectedKit)
-        WebUI.Call('DispatchEventLocal', 'RealityModUI:SpawnWithKit', selectedKit);
-      }
-    </script>
-
+        </ul>
+      </div>
+    </div>
   </body>
 
 </html>
