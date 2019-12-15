@@ -42,22 +42,28 @@
       }
 
       th {
-        padding: 20px 15px;
-        text-align: center;
+        padding: 5px 9px;
+        margin: 5px 5px;
+        background-image:  linear-gradient(#72AADA,#4E7F9F);
+        text-align: left;
         font-weight: 500;
-        font-size: 20px;
+        font-size: 16px;
         color: #fff;
+        text-shadow: 0.7px 0.7px 3px white;
         text-transform: uppercase;
       }
 
       td {
-        padding: 7px;
-        text-align: center;
+        padding: 5px 9px;
+        text-align: left;
         vertical-align: middle;
         font-weight: 300;
-        font-size: 12px;
+        background-image: linear-gradient(#3f566b,#202d35);
+        font-size: 14px;
+        opacity: 0.9;
         color: #fff;
-        border-bottom: solid 1px rgba(255, 255, 255, 0.1);
+        text-shadow: 0.5px 0.5px 3px white;
+        /*border-bottom: solid 1px rgba(255, 255, 255, 0.1);*/
       }
 
       body {
@@ -65,17 +71,32 @@
       }
     </style>
     <div id="container" style="width: 50%; height: 50%">
-      <table>
+      <table cellspacing="0" cellpadding="0">
         <thead>
-          <th>Name</th>
-          <th>Weapon</th>
-          <th>Score</th>
+          <th width="70%">Name</th>
+          <th width="15%" style="text-align: right;">Weapon</th>
+          <th width="15%" style="text-align: right;">Score</th width="15%">
         </thead>
         <tbody id="tablecontainer">
          <tr>
-          <td>Name</td>
-          <td>Weapon</td>
-          <td>Score</td>
+          <td>FoolHeen</td>
+          <td style="text-align: right;">Glock 18</td>
+          <td style="text-align: right;">3</td>
+         </tr>
+         <tr>
+          <td>Kiwidog</td>
+          <td style="text-align: right;">AK74M</td>
+          <td style="text-align: right;">7</td>
+         </tr>
+         <tr>
+          <td>Timse</td>
+          <td style="text-align: right;">L86</td>
+          <td style="text-align: right;">6</td>
+         </tr>
+         <tr>
+          <td>Janssent</td>
+          <td style="text-align: right;">MG36</td>
+          <td style="text-align: right;">16</td>
          </tr>
         </tbody>
       </table>
