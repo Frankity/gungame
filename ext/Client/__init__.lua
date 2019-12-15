@@ -82,10 +82,10 @@ function GunGameClient:OnEngineUpdate(p_Delta, p_SimDelta)
 	end
 	
 	self.m_loadHandle = nil
-		
+
 end
 
-function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)	
 	if p_Screen == nil then
 	    return
 	end

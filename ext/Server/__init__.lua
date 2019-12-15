@@ -136,6 +136,12 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	-- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
 	if player == nil or inflictor == nil then return end
 
+	if playersScores[inflictor.id].score == #weapons then
+		print(inflictor.name .. " won the match")
+		alarm(10, endRound(player))
+		print(" alarm set")
+	end
+
 	if playersScores[inflictor.id] == nil then 
 		local dataPlayer = {name = player.name, score = 1}
 		playersScores[player.id] = dataPlayer
@@ -250,12 +256,6 @@ function GunGameServer:UpdateWeapon(player)
 
 	local playerScore = playersScores[player.id]
 	local score = 1
-
-	if playersScores[player.id].score == #weapons then
-		print(player.name .. " won the match")
-		alarm(10, endRound(player))
-		print(" alarm set")
-	end
 
 	if playerScore ~= nil then
 		score = playerScore.score
