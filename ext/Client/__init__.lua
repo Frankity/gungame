@@ -99,9 +99,9 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 	end
 	local s_Screen = UIGraphAsset(p_Screen)
 	print("Pushed: " .. s_Screen.name)
-	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen" or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen") then
+	if(s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen" or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen" or s_Screen.name == "UI/Flow/Screen/PreRoundWaitingScreen") then
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
-		-- added here to send the event only when the client call the scoreboard
+		-- added here to send the event only when the client call the scoreboard and has a soldier 		
 		local player = PlayerManager:GetLocalPlayer()
 		if player.soldier ~= nil then
 			NetEvents:SendLocal('Event:Server', player)

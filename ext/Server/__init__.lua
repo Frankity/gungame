@@ -313,7 +313,6 @@ function GunGameServer:OnReceive(player)
 	-- sending player scores table to the client which requested it
 	local players = PlayerManager:GetPlayers()
 	for _, p in pairs(players) do
-		print(p.id .. " " .. p.name .. " " .. p.ping)
 		if playersScores ~= nil then
 			playersScores[p.id].ping = p.ping
 		end
