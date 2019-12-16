@@ -83,6 +83,8 @@ local weaponOrder = {
 -- list to store scores on kill	
 local playersScores = {}
 
+local spawnPlaces = {}
+
 function GunGameServer:__init()
 	print("Initializing GunGameServer")
 	self:RegisterEvents()
@@ -117,7 +119,9 @@ function GunGameServer:OnRequestSpawn(player)
 			Vec3(0,0,0)
 		)
 
-		local soldier = player:CreateSoldier(soldierBlueprint, transform)
+		print(getRandomSpawnPoint())
+
+		local soldier = player:CreateSoldier(soldierBlueprint, getRandomSpawnPoint())
 		
 		if soldier == nil then
 			print("failed to create soldier")
@@ -217,6 +221,11 @@ end
 function GunGameServer:OnPartitionLoaded(partition)
 	local instances = partition.instances	
 	for _, instance in pairs(instances) do
+
+		if instance.typeInfo.name == 'AlternateSpawnEntityData' then
+			local spawnData = AlternateSpawnEntityData(instance)
+			spawnPlaces = spawnData.transform
+		end
 	
 		if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
 			local asset = VeniceSoldierCustomizationAsset(instance)
@@ -250,6 +259,10 @@ end
 
 local function getRandomSoldierApp() 
     return soldierAppFound[math.random(1,#soldierAppFound)] 
+end
+
+local function getRandomSpawnPoint()
+	return spawnPlaces[math.random(1,#spawnPlaces)]
 end
 
 function GunGameServer:UpdateWeapon(player)
@@ -290,7 +303,34 @@ function endRound()
 end
 
 function GunGameServer:OnPlayerSpawn(player)
-	
+
+	--[[ if player == nil then return end
+
+	local playerScore = playersScores[player.id]
+	local score = 1
+
+	if playerScore ~= nil then
+		score = playerScore.score
+	end
+
+	local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
+	local attachments = {}
+
+	for _, attGuid in pairs(self.weaponOrder[score].attachments) do
+		local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
+		if attachment~= nil then
+			table.insert(attachments, attachment)
+		end
+	end
+
+	if weapon == nil then
+		print("QUE COJONES")
+		return
+	end
+
+	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
+
+	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1) ]]
 
 end
 
