@@ -98,13 +98,30 @@ function GunGameServer:RegisterEvents()
 	Events:Subscribe('Server:LevelLoaded', self, self.OnLevelLoaded)
 	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
 	Events:Subscribe('Player:Left', self, self.OnPlayerLeft)
+	Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
 	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
-
+	Events:Subscribe('Server:RoundOver', self, self.OnServerRoundOver)
 end
 
 function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
 end
 
+function GunGameServer:OnEngineUpdate(deltaTime, simDeltaTime)
+	local players = PlayerManager:GetPlayers()	
+
+--[[ 	for index, player in pairs(players) do
+		print(tostring(player.name))
+	end ]]
+	--[[ for _, player in pairs(players) do
+		if playersScores == nil then return end
+		playersScores[player.name].ping = player.ping
+	end ]]
+end
+
+function GunGameServer:OnServerRoundOver(roundTime, winningTeam)
+	self:ResetVars()
+end
+ 
 function GunGameServer:OnPlayerLeft(player)
     if player == nil then return end
     playersScores[player.id] = nil
@@ -133,29 +150,29 @@ function GunGameServer:OnLevelLoaded()
 end
 
 function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadkill, headshot, victimInReviveState)
-	-- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
+    -- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
 	if player == nil or inflictor == nil then return end
-
-	if playersScores[inflictor.id].score == #weapons then
-		print(inflictor.name .. " won the match")
-		alarm(10, endRound(player))
-		print(" alarm set")
-	end
-
-	if playersScores[inflictor.id] == nil then 
-		local dataPlayer = {name = player.name, score = 1}
-		playersScores[player.id] = dataPlayer
-	end
 	
-	local inflictorScore = playersScores[inflictor.id]
-	print('score ' .. playersScores[inflictor.id].score)
-	print("updating score of ".. inflictor.name .. ", old: ".. playersScores[inflictor.id].score)
+    if playersScores[inflictor.id] == nil then
+        local dataPlayer = {name = player.name, score = 1}
+        playersScores[inflictor.id] = dataPlayer
+    end
+    
+    local inflictorScore = playersScores[inflictor.id]
+    print('score ' .. inflictorScore.score)
+    print("updating score of ".. inflictor.name .. ", old: ".. inflictorScore.score)
 
+    -- Update score
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
-	print("new: ".. playersScores[inflictor.id].score)
 
-	self:UpdateWeapon(inflictor)
+    -- TEST: If the player suicided, set their score to #weapons - 1 if it isn't that already
+    if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
+        inflictorScore.score = #self.weaponOrder - 1
+    end
+
+	print("new: ".. playersScores[inflictor.id].score)
 	
+    self:UpdateWeapon(inflictor)
 end
 
 function GunGameServer:RegisterVars()
@@ -200,43 +217,11 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
 			local asset = SoldierWeaponUnlockAsset(instance)
-		--[[for i, sUAsset in pairs(weapons) do
-				local instanceData = ResourceManager:SearchForInstanceByGUID(sUAsset)
-				if instanceData ~= nil then
-					weapons[i] = instanceData
-				end
-			end
- 			if asset.name == 'Weapons/M416/U_M416' then
-			
-				weapons.primaryWeapon = asset
-			elseif asset.name == 'Weapons/Glock17/U_Glock17' then
-			
-				weapons.secondaryWeapon = asset
-			elseif asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then ]]
-			
-				thirdWeapon = asset
 			if asset.name == 'Weapons/Knife/U_Knife' then
 				knife = asset
 			end
 		end
 		if instance.typeInfo.name == 'UnlockAsset' then
-			local asset = UnlockAsset(instance)
-			
-			if asset.name == 'Weapons/M416/U_M416_ACOG' then
-				print('Found weapon unlock asset ' .. asset.name)
-				weaponAtt0 = asset
-			end
-
-			if asset.name == 'Weapons/M416/U_M416_Silencer' then
-				print('Found weapon unlock asset ' .. asset.name)
-				weaponAtt1 = asset
-			end
-
-			if asset.name == 'Weapons/Common/NoGadget1' then
-				print('Found weapon unlock asset ' .. asset.name)
-				noGadget1 = asset
-			end
-			
 			for i, sAsset in pairs(soldierAppearance) do 
 				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
 				if appearanceInatance ~= nil then
@@ -282,8 +267,9 @@ function GunGameServer:UpdateWeapon(player)
 
 end
 
-function endRound(player)
-	ChatManager:SendMessage(player.name .. " won the match, restarting in 10 seconds")
+function endRound()
+	print("ending round")
+	ChatManager:SendMessage(" won the match, restarting in 10 seconds")
 	RCON:SendCommand('mapList.runNextRound',{})
 end
 
@@ -295,14 +281,15 @@ function GunGameServer:OnPlayerSpawn(player)
 	end
 
 	if playersScores[player.id] == nil then
-		local dataPlayer = {name = player.name, score = 1}
+		local dataPlayer = {name = player.name, score = 1, ping = nil}
 		playersScores[player.id] = dataPlayer
 	end	
 
 	--[[ if playersScores[player.name] == nil then
 		playersScores[player.name] = {score = 1}
 	end
- 	]]
+	 ]]
+	 
 	self:UpdateWeapon(player)
 	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
 	for i = 2, 8, 1 do
@@ -324,6 +311,13 @@ end
 
 function GunGameServer:OnReceive(player)
 	-- sending player scores table to the client which requested it
+	local players = PlayerManager:GetPlayers()
+	for _, p in pairs(players) do
+		print(p.id .. " " .. p.name .. " " .. p.ping)
+		if playersScores ~= nil then
+			playersScores[p.id].ping = p.ping
+		end
+	end
 	NetEvents:SendTo('Event:Client', player, playersScores)
 end
 

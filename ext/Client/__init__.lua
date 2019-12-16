@@ -15,15 +15,14 @@ function GunGameClient:RegisterEvents()
 	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
 	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
 	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
+	Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
 	Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
-	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
-	Hooks:Install('ResourceManager:LoadBundle',999, self, self.OnLoadBundle)
-	--NetEvents:Subscribe('Event:Client', self, self.OnRequest)
 	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
+	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
 	Hooks:Install('UI:DrawNametags', 999, self, self.DrawNametags)
 	Hooks:Install('UI:DrawMoreNametags', 999, self, self.DrawMoreNametags)
 	Hooks:Install('UI:RenderMinimap', 999, self, self.RenderMinimap)
-
+	Hooks:Install('ResourceManager:LoadBundle', 999, self, self.OnLoadBundle)
 end
 
 function GunGameClient:CreateKillMessage(p_Hook)
@@ -36,6 +35,15 @@ end
 
 function GunGameClient:DrawMoreNametags(p_Hook)
     p_Hook:Return(nil)
+end
+
+function GunGameClient:OnExtensionUnloading()
+	self:ResetVars()
+end
+
+function GunGameClient:ResetVars()
+	Screens = {}
+	playersScores = {}
 end
 
 function GunGameClient:OnReceive(p_Scores)
@@ -95,7 +103,9 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
 		-- added here to send the event only when the client call the scoreboard
 		local player = PlayerManager:GetLocalPlayer()
-		NetEvents:SendLocal('Event:Server', player)
+		if player.soldier ~= nil then
+			NetEvents:SendLocal('Event:Server', player)
+		end
 	end
 
 end
@@ -105,6 +115,7 @@ function GunGameClient:OnPartitionLoaded(partition)
 
 	WebUI:Init()
 	WebUI:BringToFront()
+	WebUI:ExecuteJS("hideScoreBoard()")
 
 	for _, l_Instance in ipairs(instance) do
 		if l_Instance == nil then
