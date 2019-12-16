@@ -99,23 +99,39 @@ function GunGameServer:RegisterEvents()
 	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
 	Events:Subscribe('Player:Left', self, self.OnPlayerLeft)
 	Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
-	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
 	Events:Subscribe('Server:RoundOver', self, self.OnServerRoundOver)
+	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
+	NetEvents:Subscribe("Event:RequestSpawn", self, self.OnRequestSpawn)
 end
 
 function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
 end
 
+function GunGameServer:OnRequestSpawn(player)
+	if not player.alive then
+		
+		local transform = LinearTransform(
+			Vec3(1,0,0),
+			Vec3(0,1,0),
+			Vec3(0,0,1),
+			Vec3(0,0,0)
+		)
+
+		local soldier = player:CreateSoldier(soldierBlueprint, transform)
+		
+		if soldier == nil then
+			print("failed to create soldier")
+		end
+
+		player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Stand)
+		
+		print('soldier spawned')
+
+	end
+end
+
 function GunGameServer:OnEngineUpdate(deltaTime, simDeltaTime)
 	local players = PlayerManager:GetPlayers()	
-
---[[ 	for index, player in pairs(players) do
-		print(tostring(player.name))
-	end ]]
-	--[[ for _, player in pairs(players) do
-		if playersScores == nil then return end
-		playersScores[player.name].ping = player.ping
-	end ]]
 end
 
 function GunGameServer:OnServerRoundOver(roundTime, winningTeam)
@@ -275,34 +291,6 @@ end
 
 function GunGameServer:OnPlayerSpawn(player)
 	
-	if player == nil or player.soldier == nil then
-		print('player should be dead to spawn')
-		return
-	end
-
-	if playersScores[player.id] == nil then
-		local dataPlayer = {name = player.name, score = 1, ping = nil}
-		playersScores[player.id] = dataPlayer
-	end	
-
-	--[[ if playersScores[player.name] == nil then
-		playersScores[player.name] = {score = 1}
-	end
-	 ]]
-	 
-	self:UpdateWeapon(player)
-	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
-	for i = 2, 8, 1 do
-		player:SelectWeapon(i, knife, {})
-		player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
-		player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
-	end
-	
-	player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
-
-	for _, input in next, inputsToDisable do
-		player:EnableInput(input, false)
-	end
 
 end
 
