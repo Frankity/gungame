@@ -111,25 +111,54 @@ end
 
 function GunGameServer:OnRequestSpawn(player)
 	if not player.alive then
-		
+
 		local transform = LinearTransform(
-			Vec3(1,0,0),
-			Vec3(0,1,0),
-			Vec3(0,0,1),
-			Vec3(0,0,0)
-		)
+            Vec3(1,0,0),
+            Vec3(0,1,0),
+            Vec3(0,0,1),
+            Vec3(0,0,0)
+        )
 
-		print(getRandomSpawnPoint())
+        local spawnTransform = getRandomSpawnPoint().trans
+        transform.trans.x = spawnTransform.x
+        transform.trans.y = spawnTransform.y
+        transform.trans.z = spawnTransform.z
 
-		local soldier = player:CreateSoldier(soldierBlueprint, getRandomSpawnPoint())
-		
-		if soldier == nil then
-			print("failed to create soldier")
+        local soldier = player:CreateSoldier(soldierBlueprint, transform)
+        
+        if soldier == nil then
+            print("failed to create soldier")
 		end
-
-		player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Stand)
 		
-		print('soldier spawned')
+		local playerScore = playersScores[player.id]
+		local score = 1
+	
+		if playerScore ~= nil then
+			score = playerScore.score
+		end
+	
+		local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
+		local attachments = {}
+	
+		for _, attGuid in pairs(self.weaponOrder[score].attachments) do
+			local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
+			if attachment~= nil then
+				table.insert(attachments, attachment)
+			end
+		end
+	
+		if weapon == nil then
+			print("QUE COJONES")
+			return
+		end
+	
+		player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
+	
+		player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1) 
+
+        player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Stand)
+        
+        print('soldier spawned')
 
 	end
 end
@@ -219,49 +248,51 @@ function GunGameServer:OnExtensionUnloading()
 end
 
 function GunGameServer:OnPartitionLoaded(partition)
-	local instances = partition.instances	
-	for _, instance in pairs(instances) do
+    local instances = partition.instances    
+    for _, instance in pairs(instances) do
 
-		if instance.typeInfo.name == 'AlternateSpawnEntityData' then
-			local spawnData = AlternateSpawnEntityData(instance)
-			spawnPlaces = spawnData.transform
-		end
-	
-		if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
-			local asset = VeniceSoldierCustomizationAsset(instance)
+        if instance.typeInfo.name == 'AlternateSpawnEntityData' then
+            local spawnData = AlternateSpawnEntityData(instance)
+            if spawnData.team ~= TeamId.TeamNeutral then
+                spawnPlaces = spawnData.transform
+            end
+        end
+    
+        if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
+            local asset = VeniceSoldierCustomizationAsset(instance)
 
-			if asset.name == 'Gameplay/Kits/RURecon' then
-				soldierAsset = asset
-			end
-			
-		end
-		if instance.typeInfo.name == 'SoldierBlueprint' then
-			soldierBlueprint = SoldierBlueprint(instance)
-			print('Found soldier blueprint ' .. soldierBlueprint.name)
-		end
+            if asset.name == 'Gameplay/Kits/RURecon' then
+                soldierAsset = asset
+            end
+            
+        end
+        if instance.typeInfo.name == 'SoldierBlueprint' then
+            soldierBlueprint = SoldierBlueprint(instance)
+            print('Found soldier blueprint ' .. soldierBlueprint.name)
+        end
 
-		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
-			local asset = SoldierWeaponUnlockAsset(instance)
-			if asset.name == 'Weapons/Knife/U_Knife' then
-				knife = asset
-			end
-		end
-		if instance.typeInfo.name == 'UnlockAsset' then
-			for i, sAsset in pairs(soldierAppearance) do 
-				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
-				if appearanceInatance ~= nil then
-					table.insert(soldierAppFound, appearanceInatance)
-				end
-			end
-		end
-	end
+        if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
+            local asset = SoldierWeaponUnlockAsset(instance)
+            if asset.name == 'Weapons/Knife/U_Knife' then
+                knife = asset
+            end
+        end
+        if instance.typeInfo.name == 'UnlockAsset' then
+            for i, sAsset in pairs(soldierAppearance) do 
+                local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
+                if appearanceInatance ~= nil then
+                    table.insert(soldierAppFound, appearanceInatance)
+                end
+            end
+        end
+    end
 end
 
-local function getRandomSoldierApp() 
+function getRandomSoldierApp() 
     return soldierAppFound[math.random(1,#soldierAppFound)] 
 end
 
-local function getRandomSpawnPoint()
+function getRandomSpawnPoint()
 	return spawnPlaces[math.random(1,#spawnPlaces)]
 end
 
@@ -304,33 +335,7 @@ end
 
 function GunGameServer:OnPlayerSpawn(player)
 
-	--[[ if player == nil then return end
-
-	local playerScore = playersScores[player.id]
-	local score = 1
-
-	if playerScore ~= nil then
-		score = playerScore.score
-	end
-
-	local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
-	local attachments = {}
-
-	for _, attGuid in pairs(self.weaponOrder[score].attachments) do
-		local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
-		if attachment~= nil then
-			table.insert(attachments, attachment)
-		end
-	end
-
-	if weapon == nil then
-		print("QUE COJONES")
-		return
-	end
-
-	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
-
-	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1) ]]
+ 	
 
 end
 
