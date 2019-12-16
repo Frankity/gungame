@@ -1,15 +1,51 @@
 class 'GunGameServer'
 
 local soldierAppearance = { 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Jungle",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Navy", 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Para", 
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ranger",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
-	"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Urban" 
+	jungle = Guid("BE5BE457-641C-424E-B54E-068490322F3D"),
+	navy = Guid("F064241F-A3F7-40FB-919C-BDBE1295393F"),
+	ninja = Guid("A9923B54-3913-4C95-AF67-AA0491A13DF6"),
+	para = Guid("35C84D2A-A360-4648-B0AA-10FAE4D64A8F"),
+	ranger = Guid("2558F475-E366-42EF-91E2-3951EF9A3E39"),
+	spec = Guid("01A806BA-49FA-4CAD-B923-2ACBD8155834"),
+	urban = Guid("BA2F7234-849B-4645-BF84-5A68AEB0293C")
 }
 
+local unlocksForWeapons = {
+	l96pso = Guid("10969667-1B5B-CE2F-B6C0-11E89D00B713", "D"),
+	ak74eotech = Guid("53B10FA8-2C64-BDB5-B195-6676EA575730", "D"),
+	p90eotech = Guid("899132E3-168E-D0D8-3CF4-E52A623D024D", "D"),
+	l86eotech = Guid("894F1EB5-555E-4A81-95CF-08AD25C69DCA", "D"),
+	m96pso = Guid("2AAFF0F1-A2B7-F23C-523A-982B3F4C1F47", "D"),
+	daoeotech = Guid("5256443A-9281-349D-ACE1-1807D0178147", "D"),
+	mp7eotech = Guid("D182E80D-F6AE-91E4-C2B8-39DBCD12F18B","D"),
+	ump45eotech = Guid("50DB86F0-493C-E9A1-91C7-E3C600FB928B", "D"),
+	m249eotech = Guid("9A05157E-5916-7390-E49A-58125357587D", "D"),
+	type95eotech = Guid("344B9D0A-7A7C-6B7C-4600-19A8DC30548F", "D"),
+	mg36eotech = Guid("8C3CA26E-AA4E-22BA-ADBE-7F60617BF31E", "D"),
+	pp19eotech = Guid("6C1F61A9-099D-4E2C-CD23-EC9B78675352", "D")
+} 
+-- we located weapons guid to use
+local weapons = {
+	m9 =     {guid = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"), attachments = {}}, -- https://github.com/Powback/Venice-EBX/blob/071473993867cd2297dc662517c61edaff51e8fe/Weapons/M9/U_M9.txt
+	m44 =    {guid = Guid("1EA227D8-2EB5-A63B-52FF-BBA9CFE34AD8", "D"), attachments = {}},
+	g18 =    {guid = Guid("DB364A96-08FB-4C6E-856B-BD9749AE0A92", "D"), attachments = {}},
+	m1911 =  {guid = Guid("A76BB99E-ABFE-48E9-9972-5D87E5365DAB", "D"), attachments = {}},
+	spas12 = {guid = Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D", "D"), attachments = {}},
+	l96 =    {guid = Guid("CBAEC77C-A6AD-4D63-96BD-61FCA6C18417", "D"), attachments = {unlocksForWeapons.l96pso}},
+	ak74 =   {guid = Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E", "D"), attachments = {unlocksForWeapons.ak74eotech}},
+	p90 =    {guid = Guid("C12E6868-FC08-4E25-8AD0-1C51201EA69B", "D"), attachments = {unlocksForWeapons.p90eotech}},
+	l86 =    {guid = Guid("BA0AF247-2E5B-4574-8F89-515DFA1C767D", "D"), attachments = {unlocksForWeapons.l86eotech}},
+	m98 =    {guid = Guid("05EB2892-8B51-488E-8956-4350C3D2BA27", "D"), attachments = {unlocksForWeapons.m96pso}},
+	dao12 =  {guid = Guid("27F63AEA-DD70-4929-9B08-5FF8F075B75E", "D"), attachments = {unlocksForWeapons.daoeotech}},
+	mp7 =    {guid = Guid("04C8604E-37DE-4B51-B70A-66468003D604", "D"), attachments = {unlocksForWeapons.mp7eotech}},
+	ump45 =  {guid = Guid("2A267103-14F2-4255-B0D4-819139A4E202", "D"), attachments = {unlocksForWeapons.ump45eotech}},
+	m249 =   {guid = Guid("AEAA518B-9253-40C2-AA18-A11F8F2D474C", "D"), attachments = {unlocksForWeapons.m249eotech}},
+	type95 = {guid = Guid("FE05ACAA-32FC-4FD7-A34B-61413F6F7B1A", "D"), attachments = {unlocksForWeapons.type95eotech}},
+	mg36 =   {guid = Guid("95E00B23-BAD4-4F3B-A85E-990204EFF26B", "D"), attachments = {unlocksForWeapons.mg36eotech}},
+	pp19 =   {guid = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"), attachments = {unlocksForWeapons.pp19eotech}},
+}
+
+-- variable declarations
 local inputsToDisable = { 17, 18, 19, 20, 21, 22, 23, 31, 40, 41 }
 local soldierAppFound = {}
 local soldierAsset = nil
@@ -22,10 +58,8 @@ local weaponAtt1 = nil
 local knife = nil
 local noGadget1 = nil
 local medicbag = nil
---[[ local weapons = {
-	secondaryWeapon = secondaryWeapon,
-	primaryWeapon = primaryWeapon
-} ]]
+
+-- list with weapons in order
 local weaponOrder = {
 	weapons.m9,
 	weapons.m44,
@@ -46,35 +80,8 @@ local weaponOrder = {
 	weapons.pp19
 }
 
-local playersScores = {
-
-}
-
-local weapons = {
-	m9 = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"),
-	m44 = Guid("1EA227D8-2EB5-A63B-52FF-BBA9CFE34AD8", "D"),
-	g18 = Guid("DB364A96-08FB-4C6E-856B-BD9749AE0A92", "D"),
-	m1911 = Guid("A76BB99E-ABFE-48E9-9972-5D87E5365DAB", "D"),
-	spas12 = Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D", "D"),
-	l96 = Guid(" CBAEC77C-A6AD-4D63-96BD-61FCA6C18417", "D"),
-	ak74 = Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E", "D"),
-	p90 = Guid("C12E6868-FC08-4E25-8AD0-1C51201EA69B", "D"),
-	l86 = Guid("BA0AF247-2E5B-4574-8F89-515DFA1C767D", "D"),
-	m98 = Guid("05EB2892-8B51-488E-8956-4350C3D2BA27", "D"),
-	dao12 = Guid("27F63AEA-DD70-4929-9B08-5FF8F075B75E", "D"),
-	mp7 = Guid("04C8604E-37DE-4B51-B70A-66468003D604", "D"),
-	ump45 = Guid("2A267103-14F2-4255-B0D4-819139A4E202", "D"),
-	m249 = Guid("AEAA518B-9253-40C2-AA18-A11F8F2D474C", "D"),
-	type95 = Guid("FE05ACAA-32FC-4FD7-A34B-61413F6F7B1A", "D"),
-	mg36 = Guid("95E00B23-BAD4-4F3B-A85E-990204EFF26B", "D"),
-	pp19 = Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD", "D"),
-}
-
-local m_AreaWidth = 10
-local m_AreaLength = 20
-local m_AreaHeight = 10
-
-local m_StartingPos = {x=0, y=100, z=0}
+-- list to store scores on kill	
+local playersScores = {}
 
 function GunGameServer:__init()
 	print("Initializing GunGameServer")
@@ -85,11 +92,39 @@ end
 function GunGameServer:RegisterEvents()
 	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
 	--Events:Subscribe('Level:LoadResources', OnLoadResources)
-	Events:Subscribe("Player:Respawn", self, self.OnPlayerSpawn)
+	Events:Subscribe('Player:Respawn', self, self.OnPlayerSpawn)
 	Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
-	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
+	Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
 	Events:Subscribe('Server:LevelLoaded', self, self.OnLevelLoaded)
+	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
+	Events:Subscribe('Player:Left', self, self.OnPlayerLeft)
+	Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
+	NetEvents:Subscribe('Event:Server', self, self.OnReceive)
+	Events:Subscribe('Server:RoundOver', self, self.OnServerRoundOver)
+end
 
+function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
+end
+
+function GunGameServer:OnEngineUpdate(deltaTime, simDeltaTime)
+	local players = PlayerManager:GetPlayers()	
+
+--[[ 	for index, player in pairs(players) do
+		print(tostring(player.name))
+	end ]]
+	--[[ for _, player in pairs(players) do
+		if playersScores == nil then return end
+		playersScores[player.name].ping = player.ping
+	end ]]
+end
+
+function GunGameServer:OnServerRoundOver(roundTime, winningTeam)
+	self:ResetVars()
+end
+ 
+function GunGameServer:OnPlayerLeft(player)
+    if player == nil then return end
+    playersScores[player.id] = nil
 end
 
 function GunGameServer:OnLevelLoaded()
@@ -114,45 +149,34 @@ function GunGameServer:OnLevelLoaded()
 	}
 end
 
-
 function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadkill, headshot, victimInReviveState)
+    -- we check for the player inegrity cause "some times frostbite acts dumb --FoolHen"
 	if player == nil or inflictor == nil then return end
-
---[[ 	local weaponcasted = _G[weapon.typeInfo.name](weapon)
-
-	if string.fing(weaponcasted.name:lower(), "knife") then
-		local victimScore = playersScores[player.name]
-
-		if victimScore == nil then 
-			victimScore = {}
-		end
-
-		victimScore.score = math.min(victimScore.score - 1, 1)
-		self:UpdateWeapon(player)
-		
-		--player.score = victimScore.score
-	end ]]
-
-
-	if playersScores[inflictor.name] == nil then 
-		playersScores[inflictor.name] = {score = 1}
-	end
-	local inflictorScore = playersScores[inflictor.name]
 	
-	print("updating score of ".. inflictor.name .. ", old: ".. inflictor.score)
+    if playersScores[inflictor.id] == nil then
+        local dataPlayer = {name = player.name, score = 1}
+        playersScores[inflictor.id] = dataPlayer
+    end
+    
+    local inflictorScore = playersScores[inflictor.id]
+    print('score ' .. inflictorScore.score)
+    print("updating score of ".. inflictor.name .. ", old: ".. inflictorScore.score)
 
-	inflictorScore.score = math.max(inflictorScore.score + 1, #self.weaponOrder)
-	print("new: ".. inflictor.score)
-	self:UpdateWeapon(inflictor)
-	--player.score 
-	--player.kills
-	--player.deaths
+    -- Update score
+	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
 
+    -- TEST: If the player suicided, set their score to #weapons - 1 if it isn't that already
+    if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
+        inflictorScore.score = #self.weaponOrder - 1
+    end
+
+	print("new: ".. playersScores[inflictor.id].score)
+	
+    self:UpdateWeapon(inflictor)
 end
 
 function GunGameServer:RegisterVars()
 	self:ResetVars()
-	
 end
 
 function GunGameServer:ResetVars()
@@ -182,12 +206,10 @@ function GunGameServer:OnPartitionLoaded(partition)
 			local asset = VeniceSoldierCustomizationAsset(instance)
 
 			if asset.name == 'Gameplay/Kits/RURecon' then
-				print('Found soldier customization asset ' .. asset.name)
 				soldierAsset = asset
 			end
 			
 		end
---rcon command to disable spawn on friend
 		if instance.typeInfo.name == 'SoldierBlueprint' then
 			soldierBlueprint = SoldierBlueprint(instance)
 			print('Found soldier blueprint ' .. soldierBlueprint.name)
@@ -195,48 +217,15 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 		if instance.typeInfo.name == 'SoldierWeaponUnlockAsset' then
 			local asset = SoldierWeaponUnlockAsset(instance)
-
-			if asset.name == 'Weapons/M416/U_M416' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
-				weapons.primaryWeapon = asset
-			elseif asset.name == 'Weapons/Glock17/U_Glock17' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
-				weapons.secondaryWeapon = asset
-			elseif asset.name == 'Weapons/Gadgets/T-UGS/U_UGS' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
-				thirdWeapon = asset
-			elseif asset.name == 'Weapons/Knife/U_Knife' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
+			if asset.name == 'Weapons/Knife/U_Knife' then
 				knife = asset
-			elseif asset.name == 'Weapons/Gadgets/Medicbag/U_Medkit' then
-				print('Found soldier weapon unlock asset ' .. asset.name)
-				medicbag = asset
 			end
-
-			
 		end
 		if instance.typeInfo.name == 'UnlockAsset' then
-			local asset = UnlockAsset(instance)
-
-			if asset.name == 'Weapons/M416/U_M416_ACOG' then
-				print('Found weapon unlock asset ' .. asset.name)
-				weaponAtt0 = asset
-			end
-
-			if asset.name == 'Weapons/M416/U_M416_Silencer' then
-				print('Found weapon unlock asset ' .. asset.name)
-				weaponAtt1 = asset
-			end
-
-			if asset.name == 'Weapons/Common/NoGadget1' then
-				print('Found weapon unlock asset ' .. asset.name)
-				noGadget1 = asset
-			end
-			
-			for _, sAsset in pairs(soldierAppearance) do 
-				if asset.name == sAsset then
-					print('Found appearance asset ' .. asset.name)
-					table.insert(soldierAppFound, asset)
+			for i, sAsset in pairs(soldierAppearance) do 
+				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
+				if appearanceInatance ~= nil then
+					table.insert(soldierAppFound, appearanceInatance)
 				end
 			end
 		end
@@ -248,62 +237,87 @@ local function getRandomSoldierApp()
 end
 
 function GunGameServer:UpdateWeapon(player)
-	if player == nil or player.soldier == nil then
-		print('playr should be dead to spawn')
-		return
-	end
+	if player == nil or player.soldier == nil then return end
 
-	local playerScore = playersScores[player.name]
+	local playerScore = playersScores[player.id]
 	local score = 1
+
 	if playerScore ~= nil then
 		score = playerScore.score
 	end
-	print("updating weapon, score: "..score)
-	print(#self.weaponOrder)
-	print(self.weaponOrder[score])
-	player:SelectWeapon(WeaponSlot.WeaponSlot_0, self.weaponOrder[score], {  })
-	
+
+	local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
+	local attachments = {}
+
+	for _, attGuid in pairs(self.weaponOrder[score].attachments) do
+		local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
+		if attachment~= nil then
+			table.insert(attachments, attachment)
+		end
+	end
+
+	if weapon == nil then
+		print("QUE COJONES")
+		return
+	end
+
+	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
+
 	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
 
 end
 
+function endRound()
+	print("ending round")
+	ChatManager:SendMessage(" won the match, restarting in 10 seconds")
+	RCON:SendCommand('mapList.runNextRound',{})
+end
+
 function GunGameServer:OnPlayerSpawn(player)
-	print('checking player')
+	
 	if player == nil or player.soldier == nil then
-		print('playr should be dead to spawn')
+		print('player should be dead to spawn')
 		return
 	end
 
-	
-	self:UpdateWeapon(player)
-	
---	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weaponOrder[1], {  })
-	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
-	--player.soldier:SetWeaponPrimaryAmmoByIndex(0, 0)
-	--player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
+	if playersScores[player.id] == nil then
+		local dataPlayer = {name = player.name, score = 1, ping = nil}
+		playersScores[player.id] = dataPlayer
+	end	
 
+	--[[ if playersScores[player.name] == nil then
+		playersScores[player.name] = {score = 1}
+	end
+	 ]]
+	 
+	self:UpdateWeapon(player)
+	player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
 	for i = 2, 8, 1 do
 		player:SelectWeapon(i, knife, {})
 		player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
 		player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
 	end
 	
-	print('Setting soldier class and appearance')
 	player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
 
-	
-	
 	for _, input in next, inputsToDisable do
 		player:EnableInput(input, false)
 	end
 
-	print('Soldier spawned')
-
 end
 
 function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
-	
+end
+
+function GunGameServer:OnReceive(player)
+	-- sending player scores table to the client which requested it
+	local players = PlayerManager:GetPlayers()
+	for _, p in pairs(players) do
+		if playersScores ~= nil then
+			playersScores[p.id].ping = p.ping
+		end
+	end
+	NetEvents:SendTo('Event:Client', player, playersScores)
 end
 
 g_GunGameServer = GunGameServer()
-
