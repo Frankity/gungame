@@ -1,28 +1,30 @@
+local SpawnPoints = require("__shared/spawnpoints")
+
 class 'GunGameServer'
 
 local soldierAppearance = { 
-	jungle = Guid("BE5BE457-641C-424E-B54E-068490322F3D"),
-	navy = Guid("F064241F-A3F7-40FB-919C-BDBE1295393F"),
-	ninja = Guid("A9923B54-3913-4C95-AF67-AA0491A13DF6"),
-	para = Guid("35C84D2A-A360-4648-B0AA-10FAE4D64A8F"),
-	ranger = Guid("2558F475-E366-42EF-91E2-3951EF9A3E39"),
-	spec = Guid("01A806BA-49FA-4CAD-B923-2ACBD8155834"),
-	urban = Guid("BA2F7234-849B-4645-BF84-5A68AEB0293C")
+	jungle = 	Guid("BE5BE457-641C-424E-B54E-068490322F3D"),
+	navy = 		Guid("F064241F-A3F7-40FB-919C-BDBE1295393F"),
+	ninja = 	Guid("A9923B54-3913-4C95-AF67-AA0491A13DF6"),
+	para = 		Guid("35C84D2A-A360-4648-B0AA-10FAE4D64A8F"),
+	ranger = 	Guid("2558F475-E366-42EF-91E2-3951EF9A3E39"),
+	spec = 		Guid("01A806BA-49FA-4CAD-B923-2ACBD8155834"),
+	urban = 	Guid("BA2F7234-849B-4645-BF84-5A68AEB0293C")
 }
 
 local unlocksForWeapons = {
-	l96pso = Guid("10969667-1B5B-CE2F-B6C0-11E89D00B713", "D"),
-	ak74eotech = Guid("53B10FA8-2C64-BDB5-B195-6676EA575730", "D"),
-	p90eotech = Guid("899132E3-168E-D0D8-3CF4-E52A623D024D", "D"),
-	l86eotech = Guid("894F1EB5-555E-4A81-95CF-08AD25C69DCA", "D"),
-	m96pso = Guid("2AAFF0F1-A2B7-F23C-523A-982B3F4C1F47", "D"),
-	daoeotech = Guid("5256443A-9281-349D-ACE1-1807D0178147", "D"),
-	mp7eotech = Guid("D182E80D-F6AE-91E4-C2B8-39DBCD12F18B","D"),
-	ump45eotech = Guid("50DB86F0-493C-E9A1-91C7-E3C600FB928B", "D"),
-	m249eotech = Guid("9A05157E-5916-7390-E49A-58125357587D", "D"),
-	type95eotech = Guid("344B9D0A-7A7C-6B7C-4600-19A8DC30548F", "D"),
-	mg36eotech = Guid("8C3CA26E-AA4E-22BA-ADBE-7F60617BF31E", "D"),
-	pp19eotech = Guid("6C1F61A9-099D-4E2C-CD23-EC9B78675352", "D")
+	l96pso = 		Guid("10969667-1B5B-CE2F-B6C0-11E89D00B713", "D"),
+	ak74eotech = 	Guid("53B10FA8-2C64-BDB5-B195-6676EA575730", "D"),
+	p90eotech = 	Guid("899132E3-168E-D0D8-3CF4-E52A623D024D", "D"),
+	l86eotech = 	Guid("894F1EB5-555E-4A81-95CF-08AD25C69DCA", "D"),
+	m96pso = 		Guid("2AAFF0F1-A2B7-F23C-523A-982B3F4C1F47", "D"),
+	daoeotech = 	Guid("5256443A-9281-349D-ACE1-1807D0178147", "D"),
+	mp7eotech =	 	Guid("D182E80D-F6AE-91E4-C2B8-39DBCD12F18B","D"),
+	ump45eotech = 	Guid("50DB86F0-493C-E9A1-91C7-E3C600FB928B", "D"),
+	m249eotech = 	Guid("9A05157E-5916-7390-E49A-58125357587D", "D"),
+	type95eotech = 	Guid("344B9D0A-7A7C-6B7C-4600-19A8DC30548F", "D"),
+	mg36eotech = 	Guid("8C3CA26E-AA4E-22BA-ADBE-7F60617BF31E", "D"),
+	pp19eotech = 	Guid("6C1F61A9-099D-4E2C-CD23-EC9B78675352", "D")
 } 
 -- we located weapons guid to use
 local weapons = {
@@ -124,7 +126,6 @@ end
 
 function GunGameServer:OnLevelLoaded()
 
-
 	self.weaponOrder = {
 		weapons.m9,
 		weapons.m44,
@@ -145,17 +146,10 @@ function GunGameServer:OnLevelLoaded()
 		weapons.pp19
 	}
 
-	local iterator = EntityManager:GetIterator('ServerCharacterSpawnEntity')
-
-	local entity = iterator:Next()
-
-	while entity ~= nil do
-		local spatialEntity = SpatialEntity(entity)
-		--print(spatialEntity.transform)
-		print(spatialEntity.transform)
-		table.insert(spawnPlaces, spatialEntity.transform)
-		entity = iterator:Next()
+	for _, place in pairs(SpawnPoints["firestorm"]) do
+		table.insert(spawnPlaces, place)
 	end
+
 end
 
 function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadkill, headshot, victimInReviveState)
@@ -294,13 +288,14 @@ function GunGameServer:OnRequestSpawn(player)
             Vec3(0,0,0)
         )
 
-        local spawnTransform = getRandomSpawnPoint().trans
-        transform.trans.x = spawnTransform.x
-        transform.trans.y = spawnTransform.y
-		transform.trans.z = spawnTransform.z
+		local spawnTransform = getRandomSpawnPoint()
+		print("Printing spawnTransform") 
+		print(spawnTransform)
+        transform.trans.x = spawnTransform["x"]
+        transform.trans.y = spawnTransform["y"]
+		transform.trans.z = spawnTransform["z"]
 		
-		print(getRandomSpawnPoint())
-
+		
 		if playersScores[player.id] == nil then
 			local dataPlayer = {name = player.name, score = 1, ping = nil}
 			playersScores[player.id] = dataPlayer
