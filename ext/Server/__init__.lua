@@ -1,4 +1,5 @@
 local SpawnPoints = require("__shared/spawnpoints")
+require "__shared/timer"
 
 class 'GunGameServer'
 
@@ -160,7 +161,11 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
         local dataPlayer = {name = player.name, score = 1}
         playersScores[inflictor.id] = dataPlayer
     end
-    
+	
+	if playersScores[inflictor.id].score == 3 then
+		local t = Timer(10, false, self, self.endRound)
+	end
+
     local inflictorScore = playersScores[inflictor.id]
     print('score ' .. inflictorScore.score)
     print("updating score of ".. inflictor.name .. ", old: ".. inflictorScore.score)
@@ -289,13 +294,16 @@ function GunGameServer:OnRequestSpawn(player)
         )
 
 		local spawnTransform = getRandomSpawnPoint()
+		print(transform.trans.x)
 		print("Printing spawnTransform") 
 		print(spawnTransform)
         transform.trans.x = spawnTransform["x"]
         transform.trans.y = spawnTransform["y"]
 		transform.trans.z = spawnTransform["z"]
 		
-		
+		print("reslt")
+		print(transform.trans.x)
+
 		if playersScores[player.id] == nil then
 			local dataPlayer = {name = player.name, score = 1, ping = nil}
 			playersScores[player.id] = dataPlayer
