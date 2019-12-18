@@ -162,7 +162,7 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
         playersScores[inflictor.id] = dataPlayer
     end
 	
-	if playersScores[inflictor.id].score == 3 then
+	if playersScores[inflictor.id].score == 2 then
 		local t = Timer(10, false, self, self.endRound)
 	end
 
@@ -338,7 +338,7 @@ function GunGameServer:OnRequestSpawn(player)
 	end
 end
 
-function endRound()
+function GunGameServer:endRound()
 	print("ending round")
 	ChatManager:SendMessage(" won the match, restarting in 10 seconds")
 	RCON:SendCommand('mapList.runNextRound',{})
