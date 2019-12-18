@@ -109,60 +109,6 @@ end
 function GunGameServer:OnPlayerJoining(playerName, PlayerGUID, ip)
 end
 
-function GunGameServer:OnRequestSpawn(player)
-	if not player.alive then
-
-		local transform = LinearTransform(
-            Vec3(1,0,0),
-            Vec3(0,1,0),
-            Vec3(0,0,1),
-            Vec3(0,0,0)
-        )
-
-        local spawnTransform = getRandomSpawnPoint().trans
-        transform.trans.x = spawnTransform.x
-        transform.trans.y = spawnTransform.y
-		transform.trans.z = spawnTransform.z
-		
-        local soldier = player:CreateSoldier(soldierBlueprint, transform)
-        
-        if soldier == nil then
-            print("failed to create soldier")
-		end
-		
-		local playerScore = playersScores[player.id]
-		local score = 1
-	
-		if playerScore ~= nil then
-			score = playerScore.score
-		end
-	
-		local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
-		local attachments = {}
-	
-		for _, attGuid in pairs(self.weaponOrder[score].attachments) do
-			local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
-			if attachment~= nil then
-				table.insert(attachments, attachment)
-			end
-		end
-	
-		if weapon == nil then
-			print("QUE COJONES")
-			return
-		end
-	
-		player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
-	
-        player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Stand)
-	
-		player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1) 
-
-        print('soldier spawned')
-
-	end
-end
-
 function GunGameServer:OnEngineUpdate(deltaTime, simDeltaTime)
 	local players = PlayerManager:GetPlayers()	
 end
@@ -177,6 +123,8 @@ function GunGameServer:OnPlayerLeft(player)
 end
 
 function GunGameServer:OnLevelLoaded()
+
+
 	self.weaponOrder = {
 		weapons.m9,
 		weapons.m44,
@@ -196,6 +144,18 @@ function GunGameServer:OnLevelLoaded()
 		weapons.mg36,
 		weapons.pp19
 	}
+
+	local iterator = EntityManager:GetIterator('ServerCharacterSpawnEntity')
+
+	local entity = iterator:Next()
+
+	while entity ~= nil do
+		local spatialEntity = SpatialEntity(entity)
+		--print(spatialEntity.transform)
+		print(spatialEntity.transform)
+		table.insert(spawnPlaces, spatialEntity.transform)
+		entity = iterator:Next()
+	end
 end
 
 function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadkill, headshot, victimInReviveState)
@@ -215,9 +175,9 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
 
     -- TEST: If the player suicided, set their score to #weapons - 1 if it isn't that already
-    if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
-        inflictorScore.score = #self.weaponOrder - 1
-	end
+--[[     if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
+        inflictorScore.score = inflictorScore.score + 1
+    end ]]
 
 	print("new: ".. playersScores[inflictor.id].score)
 	
@@ -241,39 +201,27 @@ function GunGameServer:ResetVars()
 	noGadget1 = nil
 	medicbag = nil
 	self.weaponOrder = nil
+	self.spawnPlaces = nil
 end
 
 function GunGameServer:OnExtensionUnloading()
 	self:ResetVars()
+	
 end
 
 function GunGameServer:OnPartitionLoaded(partition)
 	local instances = partition.instances	
 	for _, instance in pairs(instances) do
-	-- seeking for this to only load the desired spawnpoints just for debugging 
-		if instance.typeInfo.name == "WorldPartData" then
-			local wPData = WorldPartData(instance)
-			local logic = "Levels/MP_012/TeamDeathmatch_Logic"
-			if wPData.name:lower() == logic:lower() then
-				print('found')
-				if instance.typeInfo.name == 'AlternateSpawnEntityData' then
-					local spawnData = AlternateSpawnEntityData(instance)
-					if spawnData.team ~= TeamId.TeamNeutral then -- Make sure it's not a spectator position
-						table.insert(spawnPlaces, spawnData.transform)
-					end
-				end
-			end
-		end
-	
+
+
 		if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
 			local asset = VeniceSoldierCustomizationAsset(instance)
 
 			if asset.name == 'Gameplay/Kits/RURecon' then
 				soldierAsset = asset
 			end
-
-			
 		end
+
 		if instance.typeInfo.name == 'SoldierBlueprint' then
 			soldierBlueprint = SoldierBlueprint(instance)
 			print('Found soldier blueprint ' .. soldierBlueprint.name)
@@ -285,6 +233,7 @@ function GunGameServer:OnPartitionLoaded(partition)
 				knife = asset
 			end
 		end
+
 		if instance.typeInfo.name == 'UnlockAsset' then
 			for i, sAsset in pairs(soldierAppearance) do 
 				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
@@ -335,6 +284,57 @@ function GunGameServer:UpdateWeapon(player)
 
 end
 
+function GunGameServer:OnRequestSpawn(player)
+	if not player.alive then
+
+		local transform = LinearTransform(
+            Vec3(1,0,0),
+            Vec3(0,1,0),
+            Vec3(0,0,1),
+            Vec3(0,0,0)
+        )
+
+        local spawnTransform = getRandomSpawnPoint().trans
+        transform.trans.x = spawnTransform.x
+        transform.trans.y = spawnTransform.y
+		transform.trans.z = spawnTransform.z
+		
+		print(getRandomSpawnPoint())
+
+		if playersScores[player.id] == nil then
+			local dataPlayer = {name = player.name, score = 1, ping = nil}
+			playersScores[player.id] = dataPlayer
+		end	
+
+		local soldier = player:CreateSoldier(soldierBlueprint, transform)
+
+		if soldier == nil then
+			print("failed to create soldier")
+		end
+
+		player:SpawnSoldierAt(soldier, transform, CharacterPoseType.CharacterPoseType_Stand)
+
+		self:UpdateWeapon(player)
+
+		player:SelectWeapon(WeaponSlot.WeaponSlot_1, knife, {})
+
+		for i = 2, 8, 1 do
+			player:SelectWeapon(i, knife, {})
+			player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
+			player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
+		end
+		
+		player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
+	
+		for _, input in next, inputsToDisable do
+			player:EnableInput(input, false)
+		end
+
+        print('soldier spawned')
+
+	end
+end
+
 function endRound()
 	print("ending round")
 	ChatManager:SendMessage(" won the match, restarting in 10 seconds")
@@ -342,9 +342,6 @@ function endRound()
 end
 
 function GunGameServer:OnPlayerSpawn(player)
-
- 	
-
 end
 
 function GunGameServer:ReadInstance(p_Instance,p_PartitionGuid, p_Guid)
