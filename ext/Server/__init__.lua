@@ -125,7 +125,7 @@ function GunGameServer:OnPlayerLeft(player)
     playersScores[player.id] = nil
 end
 
-function GunGameServer:OnLevelLoaded()
+function GunGameServer:OnLevelLoaded(levelName, gameMode, round, roundsPerMap)
 
 	self.weaponOrder = {
 		weapons.m9,
