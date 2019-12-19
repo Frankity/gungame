@@ -60,10 +60,12 @@ function GunGameClient:OnLoadBundle(p_Hook, p_Bundle)
 end
 
 function GunGameClient:OnUpdateInput(p_Delta)
-	
+	local player = PlayerManager:GetLocalPlayer()
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Tab) then
-        --WebUI:EnableMouse()
-		WebUI:ExecuteJS("showScoreBoard()")
+		--WebUI:EnableMouse()
+		if player.soldier ~= nil then
+			WebUI:ExecuteJS("showScoreBoard()")
+		end
 	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Tab) then
 		--WebUI:DisableMouse()
 		WebUI:ExecuteJS("hideScoreBoard()")

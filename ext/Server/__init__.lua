@@ -147,7 +147,7 @@ function GunGameServer:OnLevelLoaded(levelName, gameMode, round, roundsPerMap)
 		weapons.pp19
 	}
 
-	for _, place in pairs(SpawnPoints["firestorm"]) do
+	for _, place in pairs(SpawnPoints[levelName]) do
 		table.insert(spawnPlaces, place)
 	end
 
@@ -211,7 +211,6 @@ end
 function GunGameServer:OnPartitionLoaded(partition)
 	local instances = partition.instances	
 	for _, instance in pairs(instances) do
-
 
 		if instance.typeInfo.name == 'VeniceSoldierCustomizationAsset' then
 			local asset = VeniceSoldierCustomizationAsset(instance)
