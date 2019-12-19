@@ -162,13 +162,12 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
         playersScores[inflictor.id] = dataPlayer
     end
 	
-	if playersScores[inflictor.id].score == 2 then
+	if playersScores[inflictor.id].score == 16 then
+		ChatManager:SendMessage(inflictor.name .. " won the match, next round in 10 seconds..")
 		local t = Timer(10, false, self, self.endRound)
 	end
 
     local inflictorScore = playersScores[inflictor.id]
-    print('score ' .. inflictorScore.score)
-    print("updating score of ".. inflictor.name .. ", old: ".. inflictorScore.score)
 
     -- Update score
 	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
@@ -177,8 +176,6 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
 --[[     if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
         inflictorScore.score = inflictorScore.score + 1
     end ]]
-
-	print("new: ".. playersScores[inflictor.id].score)
 	
     self:UpdateWeapon(inflictor)
 end
@@ -293,15 +290,11 @@ function GunGameServer:OnRequestSpawn(player)
         )
 
 		local spawnTransform = getRandomSpawnPoint()
-		print(transform.trans.x)
-		print("Printing spawnTransform") 
-		print(spawnTransform)
         transform.trans.x = spawnTransform["x"]
         transform.trans.y = spawnTransform["y"]
 		transform.trans.z = spawnTransform["z"]
 		
-		print("reslt")
-		print(transform.trans.x)
+		print(transform.trans.x .. " " .. transform.trans.y .. " " .. transform.trans.z) 
 
 		if playersScores[player.id] == nil then
 			local dataPlayer = {name = player.name, score = 1, ping = nil}
@@ -339,7 +332,6 @@ end
 
 function GunGameServer:endRound()
 	print("ending round")
-	ChatManager:SendMessage(" won the match, restarting in 10 seconds")
 	RCON:SendCommand('mapList.runNextRound',{})
 end
 

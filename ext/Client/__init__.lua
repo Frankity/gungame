@@ -96,6 +96,7 @@ function GunGameClient:OnEngineUpdate(p_Delta, p_SimDelta)
 end
 
 function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)	
+	
 	if p_Screen == nil then
 	    return
 	end
@@ -109,16 +110,18 @@ function GunGameClient:OnPushedScreen(p_Hook, p_Screen, p_GraphPriority, p_Paren
 		NetEvents:SendLocal("Event:RequestSpawn", player.id)
 	end
 
+	local player = PlayerManager:GetLocalPlayer()
+
 	if s_Screen.name:sub(1, 26) == "UI/Flow/Screen/Scoreboards" or s_Screen.name:sub(1, 36) == "UI/Flow/Screen/PreRoundWaitingScreen" then
 		p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
 		-- added here to send the event only when the client call the scoreboard and has a soldier 		
-		local player = PlayerManager:GetLocalPlayer()
+		
 		if player.soldier ~= nil then
 			NetEvents:SendLocal('Event:Server', player)
 		end
 	end
 
-	if s_Screen.name:find("Spawn") then
+ 	if s_Screen.name:find("Spawn") then
         p_Hook:Pass(self.Screens['UI/Flow/Screen/EmptyScreen'], p_GraphPriority, p_ParentGraph)
         return
     end
