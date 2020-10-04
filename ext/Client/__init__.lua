@@ -19,9 +19,9 @@ function GunGameClient:RegisterEvents()
 	Events:Subscribe('Client:UpdateInput', self, self.OnUpdateInput)
 	NetEvents:Subscribe('Event:Client', self, self.OnReceive)
 	Hooks:Install('UI:PushScreen', 999, self, self.OnPushedScreen)
-	Hooks:Install('UI:DrawNametags', 999, self, self.DrawNametags)
+	--[[ Hooks:Install('UI:DrawNametags', 999, self, self.DrawNametags)
 	Hooks:Install('UI:DrawMoreNametags', 999, self, self.DrawMoreNametags)
-	Hooks:Install('UI:RenderMinimap', 999, self, self.RenderMinimap)
+	Hooks:Install('UI:RenderMinimap', 999, self, self.RenderMinimap) ]]
 	Hooks:Install('ResourceManager:LoadBundle', 999, self, self.OnLoadBundle)
 end
 
@@ -71,6 +71,33 @@ function GunGameClient:OnUpdateInput(p_Delta)
 		WebUI:ExecuteJS("hideScoreBoard()")
     end
 	
+	if player.soldier ~= nil then
+		if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) then
+			local data = nil
+			data = CameraEntityData()
+			data.fov = 90
+
+			local s_Entity = EntityManager:CreateEntity(data, LinearTransform())
+			
+			if s_Entity == nil then
+				print("Could not spawn camera")
+				return
+			end
+
+			s_Entity:Init(Realm.Realm_Client, true)
+			s_Entity:FireEvent("TakeControl") -- Takes control over the camera
+			
+			print(s_Entity.transform)
+		end
+
+        -- Get the head bone transform
+       --[[  local transformLocal = player.soldier.ragdollComponent:GetLocalTransform(1)
+        print(transformLocal)
+        transformLocal.transAndScale.w = 0
+        player.soldier.ragdollComponent:SetLocalTransform(1, transformLocal)
+ ]]
+    end
+
 end
 
 function GunGameClient:OnLoadResources(p_Dedicated)

@@ -1,4 +1,4 @@
-local SpawnPoints = require("__shared/spawnpoints")
+local spawnPoints = require("__shared/spawnpoints")
 require "__shared/timer"
 
 class 'GunGameServer'
@@ -27,6 +27,7 @@ local unlocksForWeapons = {
 	mg36eotech = 	Guid("8C3CA26E-AA4E-22BA-ADBE-7F60617BF31E", "D"),
 	pp19eotech = 	Guid("6C1F61A9-099D-4E2C-CD23-EC9B78675352", "D")
 } 
+
 -- we located weapons guid to use
 local weapons = {
 	m9 =     {guid = Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B", "D"), attachments = {}}, -- https://github.com/Powback/Venice-EBX/blob/071473993867cd2297dc662517c61edaff51e8fe/Weapons/M9/U_M9.txt
@@ -100,7 +101,33 @@ function GunGameServer:RegisterEvents()
 	Events:Subscribe('Player:Respawn', self, self.OnPlayerSpawn)
 	Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
 	Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
-	Events:Subscribe('Server:LevelLoaded', self, self.OnLevelLoaded)
+	Events:Subscribe('Level:Loaded', function(levelName, gameMode, round, roundsPerMap)
+		print("weapons loadedd")
+
+		for _, place in pairs(spawnPoints[levelName]) do
+			table.insert(spawnPlaces, place)
+		end
+	
+		self.weaponOrder = {
+			weapons.m9,
+			weapons.m44,
+			weapons.g18,
+			weapons.m1911 ,
+			weapons.spas12,
+			weapons.l96,
+			weapons.ak74,
+			weapons.p90,
+			weapons.l86,
+			weapons.m98,
+			weapons.dao12 ,
+			weapons.mp7,
+			weapons.ump45,
+			weapons.m249,
+			weapons.type95,
+			weapons.mg36,
+			weapons.pp19
+		}
+		end)
 	Events:Subscribe('Player:Joining', self, self.OnPlayerJoining)
 	Events:Subscribe('Player:Left', self, self.OnPlayerLeft)
 	Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
@@ -126,30 +153,9 @@ function GunGameServer:OnPlayerLeft(player)
 end
 
 function GunGameServer:OnLevelLoaded(levelName, gameMode, round, roundsPerMap)
+	
+	
 
-	self.weaponOrder = {
-		weapons.m9,
-		weapons.m44,
-		weapons.g18,
-		weapons.m1911 ,
-		weapons.spas12,
-		weapons.l96,
-		weapons.ak74,
-		weapons.p90,
-		weapons.l86,
-		weapons.m98,
-		weapons.dao12 ,
-		weapons.mp7,
-		weapons.ump45,
-		weapons.m249,
-		weapons.type95,
-		weapons.mg36,
-		weapons.pp19
-	}
-
-	for _, place in pairs(SpawnPoints[levelName]) do
-		table.insert(spawnPlaces, place)
-	end
 
 end
 
@@ -170,13 +176,8 @@ function GunGameServer:OnPlayerKilled(player, inflictor, position, weapon, roadk
     local inflictorScore = playersScores[inflictor.id]
 
     -- Update score
-	inflictorScore.score = math.min(inflictorScore.score + 1, #self.weaponOrder)
+	inflictorScore.score = math.min(inflictorScore.score + 1, #weaponOrder)
 
-    -- TEST: If the player suicided, set their score to #weapons - 1 if it isn't that already
---[[     if player.id == inflictor.id and inflictorScore.score < #self.weaponOrder - 1 then
-        inflictorScore.score = inflictorScore.score + 1
-    end ]]
-	
     self:UpdateWeapon(inflictor)
 end
 
@@ -231,7 +232,7 @@ function GunGameServer:OnPartitionLoaded(partition)
 
 		if instance.typeInfo.name == 'UnlockAsset' then
 			for i, sAsset in pairs(soldierAppearance) do 
-				local appearanceInatance = ResourceManager:SearchForInstanceByGUID(sAsset)
+				local appearanceInatance = ResourceManager:SearchForInstanceByGuid(sAsset)
 				if appearanceInatance ~= nil then
 					table.insert(soldierAppFound, appearanceInatance)
 				end
@@ -241,11 +242,11 @@ function GunGameServer:OnPartitionLoaded(partition)
 end
 
 function getRandomSoldierApp() 
-    return soldierAppFound[math.random(1,#soldierAppFound)] 
+    return soldierAppFound[math.random(#soldierAppFound)] 
 end
 
 function getRandomSpawnPoint()
-	return spawnPlaces[math.random(1,#spawnPlaces)]
+	return spawnPlaces[math.random(#spawnPlaces)]
 end
 
 function GunGameServer:UpdateWeapon(player)
@@ -258,11 +259,11 @@ function GunGameServer:UpdateWeapon(player)
 		score = playerScore.score
 	end
 
-	local weapon = ResourceManager:SearchForInstanceByGUID(self.weaponOrder[score].guid)
+	local weapon = ResourceManager:SearchForInstanceByGuid(self.weaponOrder[score].guid)
 	local attachments = {}
 
 	for _, attGuid in pairs(self.weaponOrder[score].attachments) do
-		local attachment = ResourceManager:SearchForInstanceByGUID(attGuid)
+		local attachment = ResourceManager:SearchForInstanceByGuid(attGuid)
 		if attachment~= nil then
 			table.insert(attachments, attachment)
 		end
@@ -275,7 +276,7 @@ function GunGameServer:UpdateWeapon(player)
 
 	player:SelectWeapon(WeaponSlot.WeaponSlot_0, weapon, attachments)
 
-	player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
+	--player.soldier:SetWeaponSecondaryAmmoByIndex(0, 1)
 
 end
 
@@ -315,8 +316,8 @@ function GunGameServer:OnRequestSpawn(player)
 
 		for i = 2, 8, 1 do
 			player:SelectWeapon(i, knife, {})
-			player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
-			player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
+			--player.soldier:SetWeaponPrimaryAmmoByIndex(i, 0)
+			--player.soldier:SetWeaponSecondaryAmmoByIndex(i, 0)
 		end
 		
 		player:SelectUnlockAssets(soldierAsset, { getRandomSoldierApp() })
